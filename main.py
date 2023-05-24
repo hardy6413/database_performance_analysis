@@ -11,6 +11,8 @@ mongoCollection.insert_one(post)
 
 # tak sie dodaje do postgresa cos
 # postgresCursor = postgresConn.cursor()
+# postgresCursor.execute("""CREATE TABLE IF NOT EXISTS person (
+# id INT PRIMARY KEY )""")
 # postgresConn.commit()
 # postgresCursor.close()
 # postgresConn.close()
