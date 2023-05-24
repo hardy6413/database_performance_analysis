@@ -1,0 +1,36 @@
+version: "3.1"
+
+services:
+
+  postgres:
+    image: postgres:14.2
+    environment:
+      POSTGRES_DB: pz
+      POSTGRES_USER: pz
+      POSTGRES_PASSWORD: pz
+    ports:
+      - "5432:5432"
+    volumes:
+      - pz-db:/var/lib/postgresql/data
+#    networks:
+#      - pz
+
+  mongo:
+    image: mongo:4.2.16
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: logs
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - mongo-db:/data/db
+
+
+volumes:
+  pz-db:
+  mongo-db:
+
+#networks:
+#  pz:
+#    driver: bridge
