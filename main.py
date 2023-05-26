@@ -8,11 +8,10 @@ postgresConn = psycopg2.connect(host="localhost", dbname="pz", user="pz", passwo
 postgresConn.autocommit = True
 alchemyDb = create_engine("postgresql://pz:pz@localhost:5432/pz")
 alchemyPostgresConn = alchemyDb.connect()
-# mongoClient = pymongo.MongoClient("mongodb://%s:%s@localhost:27017/" % ("admin", "admin"))
-# mongodb = mongoClient["test"]
-# mongoCollection = mongodb["test"]
-# post = {"id": 1, "name": "test"}
-# mongoCollection.insert_one(post)
+
+mongoClient = pymongo.MongoClient("mongodb://%s:%s@localhost:27017/" % ("admin", "admin"))
+mongodb = mongoClient["test"]
+mongoCollection = mongodb["data"]
 
 # tak sie dodaje do postgresa cos
 #postgresCursor = postgresConn.cursor()
@@ -35,5 +34,6 @@ if __name__ == '__main__':
     # dataset = pd.concat(chunk)
     # print(dataset.sample(2))
     chunk.to_sql('Data', if_exists='replace', index=False, con=alchemyPostgresConn)
+    mongoCollection.insert_many(chunk.to_dict("records"))
     print(chunk.head(5))
     print("im working")
