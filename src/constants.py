@@ -9,6 +9,7 @@ REDIS_PORT = "6379"
 PASSWORD = "admin"
 USER = "admin"
 DATABASE_NAME = "ztbd"
+SCHEMA_NAME = "footballers"
 
 
 # DATABASE TYPE

@@ -122,3 +122,8 @@ def initialize_redis(data):
         pipe.hmset(key, {str(k): str(v) for k, v in record.items()})
 
     pipe.execute()
+
+
+def delete_all():
+    for key in redis_conn.keys("*"):
+        redis_conn.delete(key)
