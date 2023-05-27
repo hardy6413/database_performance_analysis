@@ -25,10 +25,16 @@ def clear_databases():
     postgres_repository.delete_all()
 
 
+def on_exit():
+    postgres_repository.close_connection()
+    mongo_repository.delete_all()
+    redis_repository.delete_all()
+
+
 if __name__ == '__main__':
     initialize_databases()
     clear_databases()
-
+    on_exit()
     # FIXME: GUI
     # app = DatabaseOperationsApp()
     # app.run()

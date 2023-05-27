@@ -16,8 +16,12 @@ def delete_all():
     cursor.execute(query)
     postgres_conn.commit()
     cursor.close()
+
+
+def execute_query(query):
+    cursor = postgres_conn.cursor()
+    cursor.execute(query)
+
+
+def close_connection():
     postgres_conn.close()
-
-
-def get_by_id(element_id):
-    pass

@@ -129,5 +129,5 @@ def delete_all():
         redis_conn.delete(key)
 
 
-def get_by_id(element_id):
-    pass
+def close_connection():
+    redis_conn.close()

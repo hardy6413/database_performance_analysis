@@ -14,6 +14,6 @@ def delete_all():
     collection.delete_many(filter={})
 
 
-def get_by_id(element_id):
-    pass
+def close_connection():
+    mongo_client.close()
 
