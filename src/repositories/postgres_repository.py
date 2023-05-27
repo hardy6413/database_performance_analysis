@@ -22,6 +22,19 @@ def execute_query(stmt):
     res = pd.read_sql_query(stmt, postgres_conn)
     return res
 
+def execute_delete(stmt):
+    cursor = postgres_conn.cursor()
+    cursor.execute(stmt)
+    postgres_conn.commit()
+    cursor.close()
+
 
 def get_by_id(element_id):
     pass
+
+
+def execute_update(stmt):
+    cursor = postgres_conn.cursor()
+    cursor.execute(stmt)
+    postgres_conn.commit()
+    cursor.close()

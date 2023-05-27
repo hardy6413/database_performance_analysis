@@ -1,6 +1,9 @@
+import ast
+
+import pandas as pd
+
 from src.constants import SCHEMA_NAME
 from src.database_connection import get_mongo_client
-import pandas as pd
 
 mongo_client = get_mongo_client()
 collection = mongo_client[SCHEMA_NAME]
@@ -20,6 +23,25 @@ def get_by_id(element_id):
 
 
 def execute_query(stmt):
-    x = collection.find(stmt)
+    if not isinstance(stmt, dict):
+        stmt = ast.literal_eval(stmt)
+    x = collection.find(dict(stmt))
     df = pd.DataFrame(list(x))
     return df
+
+
+def execute_delete(stmt):
+    if not isinstance(stmt, dict):
+        stmt = ast.literal_eval(stmt)
+    x = collection.delete_many(dict(stmt))
+
+
+def execute_update(stmt):
+    stmt, new_values = stmt.split(',', 1)
+    if not isinstance(stmt, dict):
+        stmt = ast.literal_eval(stmt)
+
+    if not isinstance(new_values, dict):
+        new_values = ast.literal_eval(new_values)
+
+    x = collection.update_many(dict(stmt), dict(new_values))

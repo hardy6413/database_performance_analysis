@@ -36,10 +36,10 @@ def executeMongoQuery(stmt):
 
 
 if __name__ == '__main__':
-    initialize_databases()
-    x = executePostgresQuery("SELECT * from footballers")
-    y = executeMongoQuery({})
-    clear_databases()
+    #initialize_databases()
+    #x = executePostgresQuery("SELECT * from footballers")
+    #y = executeMongoQuery({})
+    #clear_databases()
 
     app = DatabaseOperationsApp()
     app.run()
