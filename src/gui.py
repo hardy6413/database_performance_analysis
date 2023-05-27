@@ -1,5 +1,8 @@
 import tkinter as tk
-from src.constants import POSTGRESQL, MONGODB, REDIS
+from src.constants import POSTGRESQL, MONGODB, REDIS, FILEPATH
+import pandas as pd
+
+from src.repositories import redis_repository, mongo_repository, postgres_repository
 
 
 class DatabaseOperationsApp:
@@ -20,7 +23,10 @@ class DatabaseOperationsApp:
         self.btn_search = tk.Button(self.window, text="Wyszukaj", command=self.search_data)
         self.btn_search.pack(pady=5)
 
-        self.btn_read = tk.Button(self.window, text="Odczytaj", command=self.read_data)
+        self.btn_search = tk.Button(self.window, text="Wyczyść baze", command=self.clear_data)
+        self.btn_search.pack(pady=5)
+
+        self.btn_read = tk.Button(self.window, text="Załaduj dane", command=self.read_data)
         self.btn_read.pack(pady=5)
 
         self.btn_save = tk.Button(self.window, text="Zapisz", command=self.save_data)
@@ -47,13 +53,29 @@ class DatabaseOperationsApp:
 
     def read_data(self):
         selected_db = self.db_selection.get()
-
+        data = pd.read_csv(FILEPATH, low_memory=False)
         if selected_db == POSTGRESQL:
+            postgres_repository.initialize_postgres(data)
             print("Odczyt danych z PostgreSQL")
         elif selected_db == MONGODB:
+            mongo_repository.initialize_mongo(data)
             print("Odczyt danych z MongoDB")
         elif selected_db == REDIS:
+            redis_repository.initialize_redis(data)
             print("Odczyt danych z Redis")
+
+    def clear_data(self):
+        selected_db = self.db_selection.get()
+        if selected_db == POSTGRESQL:
+            postgres_repository.delete_all()
+            print("czyszczenie danych z Postgresql")
+        elif selected_db == MONGODB:
+            mongo_repository.delete_all()
+            print("czyszczenie danych z MongoDB")
+        elif selected_db == REDIS:
+            redis_repository.delete_all()
+            print("czyszczenie danych z Redis")
+
 
     def save_data(self):
         selected_db = self.db_selection.get()
