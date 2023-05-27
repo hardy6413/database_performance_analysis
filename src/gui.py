@@ -5,16 +5,16 @@ from src.constants import POSTGRESQL, MONGODB, REDIS
 class DatabaseOperationsApp:
     def __init__(self):
         self.window = tk.Tk()
-        self.window.title("Database Operations")
-        self.window.geometry("300x250")
+        self.window.title("Database Operations Analysis")
+        self.window.geometry("450x500")
 
         self.db_selection_label = tk.Label(self.window, text="Wybierz bazę danych:")
         self.db_selection_label.pack()
 
         self.db_selection = tk.StringVar()
-        self.db_selection.set("PostgreSQL")
+        self.db_selection.set(POSTGRESQL)
 
-        self.db_dropdown = tk.OptionMenu(self.window, self.db_selection, "PostgreSQL", "MongoDB", "Redis")
+        self.db_dropdown = tk.OptionMenu(self.window, self.db_selection, POSTGRESQL, MONGODB, REDIS)
         self.db_dropdown.pack(pady=10)
 
         self.btn_search = tk.Button(self.window, text="Wyszukaj", command=self.search_data)

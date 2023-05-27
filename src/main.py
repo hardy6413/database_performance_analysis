@@ -1,11 +1,9 @@
 import pandas as pd
-from database_connection import get_postgres_connection, get_mongo_connection, get_redis_connection, get_alchemy_engine
 
-
-postgres_conn = get_postgres_connection()
-alchemy_conn = get_alchemy_engine()
-mongo_conn = get_mongo_connection()
-redis_conn = get_redis_connection()
+from src.constants import FILEPATH
+from src.repositories.mongo_repository import initialize_mongo
+from src.repositories.posgres_repository import initialize_postgres
+from src.repositories.redis_repository import initialize_redis
 
 
 # mierzenie czasu
@@ -14,29 +12,15 @@ redis_conn = get_redis_connection()
 # end = time.time()
 # print(end - start)
 
-def add_to_postgres(data):
-    data.to_sql('data', if_exists='append', index=False, con=alchemy_conn)
-
-
-def delete_all_from_postgres():
-    postgres_cursor = postgres_conn.cursor()
-    postgres_cursor.execute("""DELETE from "Data" where TRUE""")
-    postgres_conn.commit()
-    postgres_cursor.close()
-    postgres_conn.close()
-
-
-def delete_all_from_mongo():
-    mongo_conn.delete_many(filter={})
-
-
-def add_to_mongo(data):
-    mongo_conn.insert_many(data.to_dict("records"))
+def initialize_databases():
+    data = pd.read_csv(FILEPATH, low_memory=False)
+    initialize_redis(data)
+    initialize_mongo(data)
+    initialize_postgres(data)
 
 
 if __name__ == '__main__':
-    # wczytanie danych dla paru gb bedzie musialo byc z jakimis chunkami
-    chunk = pd.read_csv('../data/data_test_3.csv', low_memory=False)
+    initialize_databases()
 
     # GUI
     # app = DatabaseOperationsApp()
@@ -48,8 +32,8 @@ if __name__ == '__main__':
     # add_to_mongo(chunk)
     # delete_all_from_postgres()
     # delete_all_from_mongo()
-    print(chunk.head(5))
-    print("im working")
-    redis_conn.set('key', 'value')
-    value = redis_conn.get('key')
-    print(value)
+    # print(chunk.head(5))
+    # print("im working")
+    # redis_conn.set('key', 'value')
+    # value = redis_conn.get('key')
+    # print(value)
