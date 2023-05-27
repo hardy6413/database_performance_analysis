@@ -36,12 +36,16 @@ def add_to_mongo(data):
 
 if __name__ == '__main__':
     # wczytanie danych dla paru gb bedzie musialo byc z jakimis chunkami
-    chunk = pd.read_csv('data/data_test_3.csv', low_memory=False)
+    chunk = pd.read_csv('../data/data_test_3.csv', low_memory=False)
+
+    # GUI
+    # app = DatabaseOperationsApp()
+    # app.run()
 
     # dataset = pd.concat(chunk)
     # print(dataset.sample(2))
-    add_to_postgres(chunk)
-    add_to_mongo(chunk)
+    # add_to_postgres(chunk)
+    # add_to_mongo(chunk)
     # delete_all_from_postgres()
     # delete_all_from_mongo()
     print(chunk.head(5))
