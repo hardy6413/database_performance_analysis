@@ -1,12 +1,10 @@
-from src.database_connection import get_mongo_connection
+from src.database_connection import get_mongo_client
 
-mongo_conn = get_mongo_connection()
-
-
-
+mongo_client = get_mongo_client()
+collection = mongo_client["footballers"]
 
 
 def initialize_mongo(data):
-    mongo_conn.insert_many(data.to_dict("records"))
-
+    records = data.to_dict(orient='records')
+    collection.insert_many(records)
 
