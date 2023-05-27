@@ -19,15 +19,15 @@ def initialize_databases():
     postgres_repository.initialize_postgres(data)
 
 
-if __name__ == '__main__':
-    redis_repository.delete_all()
-    mongo_repository.delete_all()
-    postgres_repository.delete_all()
-    initialize_databases()
+def clear_databases():
     redis_repository.delete_all()
     mongo_repository.delete_all()
     postgres_repository.delete_all()
 
+
+if __name__ == '__main__':
+    initialize_databases()
+    clear_databases()
 
     # FIXME: GUI
     # app = DatabaseOperationsApp()
