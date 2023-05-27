@@ -25,6 +25,7 @@ if __name__ == '__main__':
     # mongo_repository.delete_all()
     # postgres_repository.delete_all()
 
+
     # FIXME: GUI
     # app = DatabaseOperationsApp()
     # app.run()

@@ -16,3 +16,7 @@ def delete_all():
     postgres_conn.commit()
     cursor.close()
     postgres_conn.close()
+
+
+def get_by_id(element_id):
+    pass

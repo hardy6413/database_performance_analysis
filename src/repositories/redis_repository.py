@@ -127,3 +127,7 @@ def initialize_redis(data):
 def delete_all():
     for key in redis_conn.keys("*"):
         redis_conn.delete(key)
+
+
+def get_by_id(element_id):
+    pass
