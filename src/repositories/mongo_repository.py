@@ -1,5 +1,6 @@
 from src.constants import SCHEMA_NAME
 from src.database_connection import get_mongo_client
+import pandas as pd
 
 mongo_client = get_mongo_client()
 collection = mongo_client[SCHEMA_NAME]
@@ -17,3 +18,8 @@ def delete_all():
 def get_by_id(element_id):
     pass
 
+
+def execute_query(stmt):
+    x = collection.find(stmt)
+    df = pd.DataFrame(list(x))
+    return df

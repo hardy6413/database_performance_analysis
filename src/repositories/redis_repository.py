@@ -1,4 +1,5 @@
 from src.database_connection import get_redis_connection
+import pandas as pd
 
 redis_conn = get_redis_connection()
 
@@ -131,3 +132,8 @@ def delete_all():
 
 def get_by_id(element_id):
     pass
+
+def execute_query(stmt):
+    pass
+    #res = pd.read_sql_query(stmt, postgres_conn)
+    #return res

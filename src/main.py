@@ -1,9 +1,11 @@
 import pandas as pd
 
 from src.constants import FILEPATH
+from src.gui import DatabaseOperationsApp
 from src.repositories import mongo_repository, redis_repository, postgres_repository
 from src.repositories.postgres_repository import initialize_postgres, delete_all
 from src.repositories.redis_repository import initialize_redis
+from src.repositories.postgres_repository import postgres_conn
 
 
 # mierzenie czasu
@@ -25,12 +27,22 @@ def clear_databases():
     postgres_repository.delete_all()
 
 
+def executePostgresQuery(stmt):
+    return postgres_repository.execute_query(stmt)
+
+def executeMongoQuery(stmt):
+    return mongo_repository.execute_query(stmt)
+
+
+
 if __name__ == '__main__':
     initialize_databases()
+    x = executePostgresQuery("SELECT * from footballers")
+    y = executeMongoQuery({})
     clear_databases()
 
-    # FIXME: GUI
-    # app = DatabaseOperationsApp()
-    # app.run()
+    app = DatabaseOperationsApp()
+    app.run()
+    postgres_conn.close()
 
 
