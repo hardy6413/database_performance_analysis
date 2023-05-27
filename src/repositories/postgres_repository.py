@@ -10,6 +10,7 @@ def initialize_postgres(data):
 
 
 def delete_all():
+    postgres_conn = get_postgres_connection()
     cursor = postgres_conn.cursor()
     query = "DELETE FROM " + SCHEMA_NAME
     cursor.execute(query)

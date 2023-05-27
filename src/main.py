@@ -15,15 +15,18 @@ from src.repositories.redis_repository import initialize_redis
 def initialize_databases():
     data = pd.read_csv(FILEPATH, low_memory=False)
     redis_repository.initialize_redis(data)
-    # mongo_repository.initialize_mongo(data)
-    # postgres_repository.initialize_postgres(data)
+    mongo_repository.initialize_mongo(data)
+    postgres_repository.initialize_postgres(data)
 
 
 if __name__ == '__main__':
+    redis_repository.delete_all()
+    mongo_repository.delete_all()
+    postgres_repository.delete_all()
     initialize_databases()
-    # redis_repository.delete_all()
-    # mongo_repository.delete_all()
-    # postgres_repository.delete_all()
+    redis_repository.delete_all()
+    mongo_repository.delete_all()
+    postgres_repository.delete_all()
 
 
     # FIXME: GUI
