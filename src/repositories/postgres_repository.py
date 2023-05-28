@@ -35,10 +35,6 @@ def close_connection():
     postgres_conn.close()
 
 
-def get_by_id(element_id):
-    pass
-
-
 def execute_update(stmt):
     cursor = postgres_conn.cursor()
     cursor.execute(stmt)

@@ -18,7 +18,7 @@ def get_mongo_client():
 
 
 def get_redis_connection():
-    redis_connection = redis.Redis(host='localhost', port=REDIS_PORT)
+    redis_connection = redis.Redis(host=HOST, port=REDIS_PORT)
     return redis_connection
 
 
