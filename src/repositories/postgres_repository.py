@@ -18,9 +18,11 @@ def delete_all():
     postgres_conn.commit()
     cursor.close()
 
+
 def execute_query(stmt):
     res = pd.read_sql_query(stmt, postgres_conn)
     return res
+
 
 def execute_delete(stmt):
     cursor = postgres_conn.cursor()
