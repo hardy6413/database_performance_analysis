@@ -6,6 +6,7 @@ import pandas as pd
 from src.constants import POSTGRESQL, MONGODB, REDIS, FILEPATH
 from src.repositories import redis_repository, mongo_repository, postgres_repository
 
+
 pd.set_option('display.max_columns', 5)
 
 
@@ -56,6 +57,9 @@ class DatabaseOperationsApp:
 
         self.lbl = ScrolledText(self.window, wrap=tk.WORD)
         self.lbl.pack()
+
+        self.duration = tk.Label(self.window, text="czas wykonania:")
+        self.duration.pack()
 
     def run(self):
         self.window.mainloop()
