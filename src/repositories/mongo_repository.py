@@ -9,7 +9,7 @@ import time
 mongo_client = get_mongo_client()
 collection = mongo_client[SCHEMA_NAME]
 
-selectQueryDurations = []
+selectDurations = []
 deleteDurations = []
 updateDurations = []
 
@@ -33,7 +33,7 @@ def execute_query(stmt):
     start = time.time()
     x = collection.find(dict(stmt))
     end = time.time()
-    selectQueryDurations.append(end - start)
+    selectDurations.append(end - start)
     df = pd.DataFrame(list(x))
     return df
 

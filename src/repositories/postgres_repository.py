@@ -8,7 +8,7 @@ postgres_conn = get_postgres_connection()
 alchemy_conn = get_alchemy_engine()
 
 
-selectQueryDurations = []
+selectDurations = []
 deleteDurations = []
 updateDurations = []
 
@@ -28,7 +28,7 @@ def execute_query(stmt):
     start = time.time()
     res = pd.read_sql_query(stmt, postgres_conn)
     end = time.time()
-    selectQueryDurations.append(end - start)
+    selectDurations.append(end - start)
     return res
 
 

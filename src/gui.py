@@ -87,44 +87,16 @@ class DatabaseOperationsApp:
             redis_repository.initialize_redis(data)
             print("Odczyt danych z Redis")
 
-    def save_data(self):
-        selected_db = self.db_selection.get()
-
-        if selected_db == POSTGRESQL:
-            print("Zapisywanie danych do PostgreSQL")
-        elif selected_db == MONGODB:
-            print("Zapisywanie danych do MongoDB")
-        elif selected_db == REDIS:
-            print("Zapisywanie danych do Redis")
-
-    def delete_data(self):
-        selected_db = self.db_selection.get()
-
-        if selected_db == POSTGRESQL:
-            print("Usuwanie danych z PostgreSQL")
-        elif selected_db == MONGODB:
-            print("Usuwanie danych z MongoDB")
-        elif selected_db == REDIS:
-            print("Usuwanie danych z Redis")
-
-    def modify_data(self):
-        selected_db = self.db_selection.get()
-
-        if selected_db == POSTGRESQL:
-            print("Modyfikacja danych w PostgreSQL")
-        elif selected_db == MONGODB:
-            print("Modyfikacja danych w MongoDB")
-        elif selected_db == REDIS:
-            print("Modyfikacja danych w Redis")
-
     def execute_query(self):
         selected_db = self.db_selection.get()
         inp = self.inputtxt.get(1.0, "end-1c")
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_query(inp)
+            self.duration.config(text="czas wykonania: " + postgres_repository.selectDurations[-1])
             print("query w PostgreSQL")
         elif selected_db == MONGODB:
             res = mongo_repository.execute_query(inp)
+            self.duration.config(text="czas wykonania: " + mongo_repository.selectDurations[-1])
             print("query danych w MongoDB")
         elif selected_db == REDIS:
             res = redis_repository.execute_query(inp)
@@ -137,9 +109,11 @@ class DatabaseOperationsApp:
         inp = self.inputtxt.get(1.0, "end-1c")
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_delete(inp)
+            self.duration.config(text="czas wykonania: " + postgres_repository.deleteDurations[-1])
             print("delete w PostgreSQL")
         elif selected_db == MONGODB:
             res = mongo_repository.execute_delete(inp)
+            self.duration.config(text="czas wykonania: " + mongo_repository.deleteDurations[-1])
             print("delete danych w MongoDB")
         elif selected_db == REDIS:
             res = redis_repository.execute_query(inp)
@@ -150,9 +124,11 @@ class DatabaseOperationsApp:
         inp = self.inputtxt.get(1.0, "end-1c")
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_update(inp)
+            self.duration.config(text="czas wykonania: " + postgres_repository.updateDurations[-1])
             print("update w PostgreSQL")
         elif selected_db == MONGODB:
             res = mongo_repository.execute_update(inp)
+            self.duration.config(text="czas wykonania: " + mongo_repository.updateDurations[-1])
             print("update danych w MongoDB")
         elif selected_db == REDIS:
             res = redis_repository.execute_query(inp)
