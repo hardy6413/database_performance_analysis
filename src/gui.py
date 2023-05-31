@@ -204,12 +204,13 @@ class DatabaseOperationsApp:
             mean, mode = postgres_repository.execute_mean(inp)
             self.duration.config(text="czas wykonania: " + str(postgres_repository.meanDurations[-1]))
             self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
-                             + " srednie  " + str(mean) + " \n mediany \n" + str(mode))
+                             + " srednie  " + str(mean) + " \n mediany " + str(mode))
             print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
-            res = mongo_repository.execute_update(inp)
-            self.duration.config(text="czas wykonania: " + str(mongo_repository.updateDurations[-1]))
-            print("update danych w MongoDB")
+            mean, mode = mongo_repository.execute_mean(inp)
+            self.duration.config(text="czas wykonania: " + str(mongo_repository.meanDurations[-1]))
+            self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
+                            + " srednie  " + str(mean) + " \n mediany " + str(mode))
         elif selected_db == REDIS:
             res = redis_repository.execute_query(inp)
             print("update danych w Redis")

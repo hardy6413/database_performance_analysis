@@ -89,11 +89,16 @@ def execute_count(stmt):
 
 
 def execute_mean(stmt):
-    stmt, new_values = stmt.split(';', 1)
+    cols = stmt.split(';')
+    stmt = cols[0]
     if not isinstance(stmt, dict):
         stmt = ast.literal_eval(stmt)
+
+    t = {}
+    for col in cols:
+        t.update({col: 1})
     start = time.time()
-    x = collection.find(dict(stmt), {new_values: 1})
+    x = collection.find(dict(stmt), t)
     end = time.time()
     countDurations.append(end - start)
     df = pd.DataFrame(list(x))
