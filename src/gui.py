@@ -189,8 +189,10 @@ class DatabaseOperationsApp:
                              + "liczba wystąpien  " + str(res))
             print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
-            res = mongo_repository.execute_update(inp)
-            self.duration.config(text="czas wykonania: " + str(mongo_repository.updateDurations[-1]))
+            res = mongo_repository.execute_word(inp)
+            self.duration.config(text="czas wykonania: " + str(mongo_repository.wordDurations[-1]))
+            self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
+                            + "liczba wystąpien  " + str(res))
             print("update danych w MongoDB")
         elif selected_db == REDIS:
             res = redis_repository.execute_query(inp)

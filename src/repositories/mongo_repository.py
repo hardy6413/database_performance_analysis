@@ -114,3 +114,17 @@ def execute_mean(stmt):
     return means, mediane
 
 
+def execute_word(stmt):
+    stmt, col, word = stmt.split(';', 2)
+    if not isinstance(stmt, dict):
+        stmt = ast.literal_eval(stmt)
+
+    start = time.time()
+    x = collection.find(dict(stmt), {col: 1})
+    df = pd.DataFrame(list(x))
+    amount = df[df.columns[1]].str.count(str(word)).sum()
+    end = time.time()
+    wordDurations.append(end - start)
+    return amount
+
+
