@@ -165,14 +165,18 @@ class DatabaseOperationsApp:
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_count(inp)
             self.duration.config(text="czas wykonania: " + str(postgres_repository.countDurations[-1]))
-            self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
-                             + "liczba rekordow  " + str(res))
+            self.lbl.insert(tk.END,
+                            "\nQUERY RESULT --------------------------------------------------------\n"
+                            + "liczba rekordow  "
+                            + str(res))
             print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
             res = mongo_repository.execute_count(inp)
             self.duration.config(text="czas wykonania: " + str(mongo_repository.countDurations[-1]))
-            self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
-                            + "liczba rekordow  " + str(res))
+            self.lbl.insert(tk.END,
+                            "\nQUERY RESULT --------------------------------------------------------\n"
+                            + "liczba rekordow  "
+                            + str(res))
             print("update danych w MongoDB")
         elif selected_db == REDIS:
             res = redis_repository.execute_query(inp)
@@ -185,14 +189,18 @@ class DatabaseOperationsApp:
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_word(inp)
             self.duration.config(text="czas wykonania: " + str(postgres_repository.wordDurations[-1]))
-            self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
-                             + "liczba wystąpien  " + str(res))
+            self.lbl.insert(tk.END,
+                            "\nQUERY RESULT --------------------------------------------------------\n"
+                            + "liczba wystąpien  "
+                            + str(res))
             print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
             res = mongo_repository.execute_word(inp)
             self.duration.config(text="czas wykonania: " + str(mongo_repository.wordDurations[-1]))
-            self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
-                            + "liczba wystąpien  " + str(res))
+            self.lbl.insert(tk.END,
+                            "\nQUERY RESULT --------------------------------------------------------\n"
+                            + "liczba wystąpien  "
+                            + str(res))
             print("update danych w MongoDB")
         elif selected_db == REDIS:
             res = redis_repository.execute_query(inp)
@@ -205,14 +213,22 @@ class DatabaseOperationsApp:
         if selected_db == POSTGRESQL:
             mean, mode = postgres_repository.execute_mean(inp)
             self.duration.config(text="czas wykonania: " + str(postgres_repository.meanDurations[-1]))
-            self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
-                             + " srednie  " + str(mean) + " \n mediany " + str(mode))
+            self.lbl.insert(tk.END,
+                            "\nQUERY RESULT --------------------------------------------------------\n"
+                            + " srednie  "
+                            + str(mean)
+                            + " \n mediany "
+                            + str(mode))
             print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
             mean, mode = mongo_repository.execute_mean(inp)
             self.duration.config(text="czas wykonania: " + str(mongo_repository.meanDurations[-1]))
-            self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
-                            + " srednie  " + str(mean) + " \n mediany " + str(mode))
+            self.lbl.insert(tk.END,
+                            "\nQUERY RESULT --------------------------------------------------------\n"
+                            + " srednie  "
+                            + str(mean)
+                            + " \n mediany "
+                            + str(mode))
         elif selected_db == REDIS:
             res = redis_repository.execute_query(inp)
             print("update danych w Redis")
