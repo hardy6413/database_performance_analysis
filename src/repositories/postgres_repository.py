@@ -96,10 +96,10 @@ def execute_mean(stmt):
 
 
 def execute_word(stmt):
-    stmt, new_values = stmt.split(',', 1)
+    stmt, new_values = stmt.split(';', 1)
     start = time.time()
     res = pd.read_sql_query(stmt, postgres_conn)
-    amount = res[res.columns[0]].str.count("Me").sum()
+    amount = res[res.columns[0]].str.count(str(new_values)).sum()
     end = time.time()
     wordDurations.append(end - start)
     return amount
