@@ -118,24 +118,89 @@ def initialize_redis(data):
             'gk': str(row['gk']),
             'player_face_url': str(row['player_face_url'])
         }
-
+        # hmset vs hset
         pipe.hmset(key, {str(k): str(v) for k, v in record.items()})
 
     pipe.execute()
 
 
 def delete_all():
-    for key in redis_conn.keys("*"):
+    for key in redis_conn.keys('*'):
         redis_conn.delete(key)
 
 
-def execute_update(key, value):
+def execute_update_full_row(key, value):
     redis_conn.set(key, value)
 
 
-def execute_query(key):
-    value = redis_conn.get(key)
-    return value
+def execute_update_property(key, property_name, value):
+    redis_conn.set(key, value)
+
+
+def execute_query_by_key(key: str = '*', query_filters: dict = None, filter_operator: str = 'OR'):
+    values = []
+    for key in redis_conn.keys(key):
+        values_dict = redis_conn.hgetall(key)
+        if query_filters is not None:
+            if filter_operator == 'OR':
+                if any(values_dict.get(k) == v for k, v in query_filters.items()):
+                    values.append(values_dict)
+            elif filter_operator == 'AND':
+                if all(values_dict.get(k) == v for k, v in query_filters.items()):
+                    values.append(values_dict)
+            else:
+                raise ValueError("Invalid filter_operator. Must be 'OR' or 'AND'.")
+        else:  # get all
+            values.append(values_dict)
+    return values
+
+
+# or
+# def execute_query_by_key(key: str = '*', query_filters: dict = None):
+#     values = []
+#     for key in redis_conn.keys(key):
+#         values_dict = redis_conn.hgetall(key)
+#         if query_filters is not None:
+#             for key, value in query_filters.items():  # only one where cause {'fifa_update': '10'}
+#                 if key in values_dict and values_dict[key] == value:
+#                     if values_dict not in values:
+#                         values.append(values_dict)
+#         else:  # get all
+#             values.append(redis_conn.hgetall(key))
+#     return values
+#
+#
+#
+#
+# # and
+# def filter_data_in_redis(user_filters):
+#     cursor = 0
+#     keys = []
+#     while True:
+#         cursor, scan_keys = redis_conn.scan(cursor, match='*', count=100)
+#         keys.extend(scan_keys)
+#         if cursor == 0:
+#             break
+#
+#     filtered_data = []
+#     for key in keys:
+#         data = redis_conn.hgetall(key)
+#         is_match = True
+#         for field, value in user_filters.items():
+#             if data.get(field) != value:
+#                 is_match = False
+#                 break
+#         if is_match:
+#             filtered_data.append(data)
+#
+#     return filtered_data
+
+def execute_get_by_key(key):
+    return redis_conn.get(key)
+
+
+def execute_get_all():
+    return redis_conn.hgetall()
 
 
 def execute_update_dict(key, field, value):

@@ -18,6 +18,7 @@ countDurations = []
 meanDurations = []
 wordDurations = []
 
+
 def initialize_mongo(data):
     records = data.to_dict(orient='records')
     collection.insert_many(records)

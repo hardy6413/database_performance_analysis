@@ -18,6 +18,7 @@ meanDurations = []
 wordDurations = []
 
 
+
 def initialize_postgres(data):
     data.to_sql(SCHEMA_NAME, if_exists='append', index=False, con=alchemy_conn)
 

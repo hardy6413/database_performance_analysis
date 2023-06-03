@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
+from tkinter import ttk
 
 import pandas as pd
 
-from src.constants import POSTGRESQL, MONGODB, REDIS, FILEPATH
+from src.constants import POSTGRESQL, MONGODB, REDIS, \
+    MEAN_AND_MEDIAN, WORD_COUNT, STATISTICS, \
+    EXECUTION_TIME, SELECT, DELETE, MODIFY, EXECUTE
 from src.repositories import redis_repository, mongo_repository, postgres_repository
-
 
 pd.set_option('display.max_columns', 5)
 
@@ -13,92 +15,64 @@ pd.set_option('display.max_columns', 5)
 class DatabaseOperationsApp:
     def __init__(self):
         self.window = tk.Tk()
-        self.window.title("Database Operations Analysis")
-        self.window.geometry("450x500")
+        self.window.title("Wybór bazy danych")
+        self.window.geometry("600x550")
+        self.tab_control = ttk.Notebook(self.window)
 
-        self.db_selection_label = tk.Label(self.window, text="Wybierz bazę danych:")
-        self.db_selection_label.pack()
+        for db_name in [POSTGRESQL, MONGODB, REDIS]:
+            tab = ttk.Frame(self.tab_control)
+            self.tab_control.add(tab, text=db_name)
 
-        self.db_selection = tk.StringVar()
-        self.db_selection.set(POSTGRESQL)
+            self.inputtxt = tk.Text(tab, height=5)
+            self.inputtxt.pack()
 
-        self.db_dropdown = tk.OptionMenu(self.window, self.db_selection, POSTGRESQL, MONGODB, REDIS)
-        self.db_dropdown.pack(pady=10)
+            if db_name == REDIS:
+                self.execute = tk.Button(tab, text=SELECT, command=lambda: self.execute_query(db_name))
+                self.execute.pack(pady=1, padx=5)
 
-        # self.btn_search = tk.Button(self.window, text="Wyszukaj", command=self.search_data)
-        # self.btn_search.pack(pady=5)
+                self.btn_save = tk.Button(tab, text=SELECT, command=lambda: self.execute_save(db_name))
+                self.btn_save.pack(pady=1, padx=5)
 
-        self.btn_search = tk.Button(self.window, text="Wyczyść baze", command=self.clear_data)
-        self.btn_search.pack(pady=5)
+                self.btn_delete = tk.Button(tab, text=DELETE, command=lambda: self.execute_delete(db_name))
+                self.btn_delete.pack(pady=1, padx=5)
 
-        self.btn_read = tk.Button(self.window, text="Załaduj dane", command=self.read_data)
-        self.btn_read.pack(pady=5)
+                self.btn_modify = tk.Button(tab, text=MODIFY, command=lambda: self.execute_update(db_name))
+                self.btn_modify.pack(pady=1, padx=5)
+            else:
+                self.execute = tk.Button(tab, text=EXECUTE, command=lambda: self.execute_query(db_name))
+                self.execute.pack(pady=1, padx=5)
 
-        # self.btn_save = tk.Button(self.window, text="Zapisz", command=self.save_data)
-        # self.btn_save.pack(pady=5)
+            self.lbl = ScrolledText(tab, wrap=tk.WORD, height=8)
+            self.lbl.pack()
 
-        # self.btn_delete = tk.Button(self.window, text="Usuń", command=self.delete_data)
-        # self.btn_delete.pack(pady=5)
+            self.execute_count_button = tk.Button(tab, text=STATISTICS, command=lambda: self.execute_count(db_name))
+            self.execute_count_button.pack(pady=5)
 
-        # self.btn_modify = tk.Button(self.window, text="Modyfikuj", command=self.modify_data)
-        # self.btn_modify.pack(pady=5)
+            self.execute_word_button = tk.Button(tab, text=WORD_COUNT, command=lambda: self.execute_word(db_name))
+            self.execute_word_button.pack(pady=5)
 
-        self.inputtxt = tk.Text(self.window, height=5, width=20)
-        self.inputtxt.pack()
+            self.execute_mean_button = tk.Button(tab, text=MEAN_AND_MEDIAN, command=lambda: self.execute_mean(db_name))
+            self.execute_mean_button.pack(pady=5)
 
-        self.execute = tk.Button(self.window, text="wykonaj query", command=self.execute_query)
-        self.execute.pack(pady=5)
+            self.duration = tk.Label(tab, text=EXECUTION_TIME)
+            self.duration.pack()
 
-        self.execute_delete_button = tk.Button(self.window, text="wykonaj usunięcie", command=self.execute_delete)
-        self.execute_delete_button.pack(pady=5)
+        self.tab_control.bind("<<NotebookTabChanged>>", self.switch_tab)
+        self.tab_control.pack(expand=1, fill='both')
 
-        self.execute_update_button = tk.Button(self.window, text="wykonaj update", command=self.execute_update)
-        self.execute_update_button.pack(pady=5)
-
-        self.execute_count_button = tk.Button(self.window, text="statystyki liczbowe", command=self.execute_count)
-        self.execute_count_button.pack(pady=5)
-
-        self.execute_word_button = tk.Button(self.window, text="liczba wystąpień słów", command=self.execute_word)
-        self.execute_word_button.pack(pady=5)
-
-        self.execute_mean_button = tk.Button(self.window, text="średnia i mediana", command=self.execute_mean)
-        self.execute_mean_button.pack(pady=5)
-
-        self.duration = tk.Label(self.window, text="czas wykonania:")
-        self.duration.pack()
-
-        self.lbl = ScrolledText(self.window, wrap=tk.WORD)
-        self.lbl.pack()
-
+        self.window.mainloop()
 
     def run(self):
         self.window.mainloop()
 
-    def search_data(self):
-        selected_db = self.db_selection.get()
+    def switch_tab(self, event):
+        self.tab_control.index(self.tab_control.select())
 
-        if selected_db == POSTGRESQL:
-            print("Wyszukiwanie danych w PostgreSQL")
-        elif selected_db == MONGODB:
-            print("Wyszukiwanie danych w MongoDB")
-        elif selected_db == REDIS:
-            print("Wyszukiwanie danych w Redis")
+    def execute_save(self, db_name):
+        pass
 
-    def read_data(self):
-        selected_db = self.db_selection.get()
-        data = pd.read_csv(FILEPATH, low_memory=False)
-        if selected_db == POSTGRESQL:
-            postgres_repository.initialize_postgres(data)
-            print("Odczyt danych z PostgreSQL")
-        elif selected_db == MONGODB:
-            mongo_repository.initialize_mongo(data)
-            print("Odczyt danych z MongoDB")
-        elif selected_db == REDIS:
-            redis_repository.initialize_redis(data)
-            print("Odczyt danych z Redis")
-
-    def execute_query(self):
-        selected_db = self.db_selection.get()
+    def execute_query(self, db_name):
+        selected_db = db_name
         inp = self.inputtxt.get(1.0, "end-1c")
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_query(inp)
@@ -115,8 +89,8 @@ class DatabaseOperationsApp:
         self.lbl.insert(tk.END, "\nQUERY RESULT --------------------------------------------------------\n"
                         + str(res.head()))
 
-    def execute_delete(self):
-        selected_db = self.db_selection.get()
+    def execute_delete(self, db_name):
+        selected_db = db_name
         inp = self.inputtxt.get(1.0, "end-1c")
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_delete(inp)
@@ -130,8 +104,8 @@ class DatabaseOperationsApp:
             res = redis_repository.execute_query(inp)
             print("delete danych w Redis")
 
-    def execute_update(self):
-        selected_db = self.db_selection.get()
+    def execute_update(self, db_name):
+        selected_db = db_name
         inp = self.inputtxt.get(1.0, "end-1c")
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_update(inp)
@@ -145,8 +119,8 @@ class DatabaseOperationsApp:
             res = redis_repository.execute_query(inp)
             print("update danych w Redis")
 
-    def clear_data(self):
-        selected_db = self.db_selection.get()
+    def clear_data(self, db_name):
+        selected_db = db_name
         if selected_db == POSTGRESQL:
             postgres_repository.delete_all()
             print("czyszczenie danych z Postgresql")
@@ -157,10 +131,8 @@ class DatabaseOperationsApp:
             redis_repository.delete_all()
             print("czyszczenie danych z Redis")
 
-
-
-    def execute_count(self):
-        selected_db = self.db_selection.get()
+    def execute_count(self, db_name):
+        selected_db = db_name
         inp = self.inputtxt.get(1.0, "end-1c")
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_count(inp)
@@ -182,9 +154,8 @@ class DatabaseOperationsApp:
             res = redis_repository.execute_query(inp)
             print("update danych w Redis")
 
-
-    def execute_word(self):
-        selected_db = self.db_selection.get()
+    def execute_word(self, db_name):
+        selected_db = db_name
         inp = self.inputtxt.get(1.0, "end-1c")
         if selected_db == POSTGRESQL:
             res = postgres_repository.execute_word(inp)
@@ -206,9 +177,8 @@ class DatabaseOperationsApp:
             res = redis_repository.execute_query(inp)
             print("update danych w Redis")
 
-
-    def execute_mean(self):
-        selected_db = self.db_selection.get()
+    def execute_mean(self, db_name):
+        selected_db = db_name
         inp = self.inputtxt.get(1.0, "end-1c")
         if selected_db == POSTGRESQL:
             mean, mode = postgres_repository.execute_mean(inp)
