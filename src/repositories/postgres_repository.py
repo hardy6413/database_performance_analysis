@@ -4,7 +4,8 @@ import time
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from src.constants import SCHEMA_NAME
+from src.constants import SCHEMA_NAME, SELECT_OPERATION, WHERE, DELETE_OPERATION, UPDATE_OPERATION, \
+    TABLE_NAME, SET, FROM
 from src.database_connection import get_alchemy_engine, get_postgres_connection
 
 postgres_conn = get_postgres_connection()
@@ -18,32 +19,33 @@ meanDurations = []
 wordDurations = []
 
 
-
 def initialize_postgres(data):
     data.to_sql(SCHEMA_NAME, if_exists='append', index=False, con=alchemy_conn)
 
 
 def delete_all():
     cursor = postgres_conn.cursor()
-    query = "DELETE FROM " + SCHEMA_NAME
+    query = DELETE_OPERATION + FROM + SCHEMA_NAME
     cursor.execute(query)
     postgres_conn.commit()
     cursor.close()
 
 
 def execute_query(stmt):
+    query = SELECT_OPERATION + stmt + FROM + TABLE_NAME
     start = time.time()
-    res = pd.read_sql_query(stmt, postgres_conn)
+    res = pd.read_sql_query(query, postgres_conn)
     end = time.time()
     selectDurations.append(end - start)
     return res
 
 
 def execute_delete(stmt):
+    query = DELETE_OPERATION + FROM + TABLE_NAME + WHERE + stmt
     start = time.time()
 
     cursor = postgres_conn.cursor()
-    cursor.execute(stmt)
+    cursor.execute(query)
     postgres_conn.commit()
     cursor.close()
 
@@ -51,20 +53,21 @@ def execute_delete(stmt):
     deleteDurations.append(end - start)
 
 
-def close_connection():
-    postgres_conn.close()
-
-
 def execute_update(stmt):
+    query = UPDATE_OPERATION + TABLE_NAME + SET + stmt
     start = time.time()
 
     cursor = postgres_conn.cursor()
-    cursor.execute(stmt)
+    cursor.execute(query)
     postgres_conn.commit()
     cursor.close()
 
     end = time.time()
     updateDurations.append(end - start)
+
+
+def close_connection():
+    postgres_conn.close()
 
 
 def execute_count(stmt):
@@ -86,14 +89,14 @@ def execute_mean(stmt):
     start = time.time()
     res = pd.read_sql_query(stmt, postgres_conn)
     means = {}
-    mediane = {}
+    median = {}
     for col in res.columns:
         means.update({col: res[col].mean()})
-        mediane.update({col: res[col].median()})
+        median.update({col: res[col].median()})
 
     end = time.time()
     meanDurations.append(end - start)
-    return means, mediane
+    return means, median
 
 
 def execute_word(stmt):
