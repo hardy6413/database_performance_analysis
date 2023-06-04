@@ -1,14 +1,11 @@
-import json
-import re
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
-from tkinter import ttk
 
 import pandas as pd
 
 from src.constants import POSTGRESQL, MONGODB, REDIS, \
     MEAN_AND_MEDIAN, WORD_COUNT, STATISTICS, \
-    EXECUTION_TIME, SELECT, DELETE, MODIFY,  INSERT
+    EXECUTION_TIME, SELECT, DELETE, MODIFY, INSERT
 from src.repositories import redis_repository, mongo_repository, postgres_repository
 
 pd.set_option('display.max_columns', 5)
@@ -25,34 +22,37 @@ class DatabaseOperationsApp:
         self.db_selection.set(POSTGRESQL)
 
         self.db_dropdown = tk.OptionMenu(self.window, self.db_selection, POSTGRESQL, MONGODB, REDIS)
-        self.db_dropdown.grid(row=0, column=2, sticky="nsew", padx=20, pady=10)
+        self.db_dropdown.grid(row=0, column=2, sticky="ew", padx=20, pady=10)
 
         self.inputtxt = tk.Text(self.window, height=6)
         self.inputtxt.grid(row=1, column=1, columnspan=4, sticky="nsew", padx=20)
 
-        self.execute = tk.Button(self.window, text=SELECT, command=self.execute_query)
-        self.execute.grid(row=2, column=1, sticky="w", padx=50, pady=5)
+        self.execute = tk.Button(self.window, text=SELECT, command=self.execute_query, width=13)
+        self.execute.grid(row=2, column=2, sticky="w", padx=70, pady=10)
 
-        self.execute_delete_button = tk.Button(self.window, text=DELETE, command=self.execute_delete)
-        self.execute_delete_button.grid(row=2, column=2, sticky="w", padx=70,  pady=5)
+        self.execute_delete_button = tk.Button(self.window, text=DELETE, command=self.execute_delete, width=13)
+        self.execute_delete_button.grid(row=3, column=1, sticky="w", padx=50,  pady=5)
 
-        self.execute_update_button = tk.Button(self.window, text=MODIFY, command=self.execute_update)
-        self.execute_update_button.grid(row=2, column=3, sticky="w", padx=70, pady=5)
+        self.execute_update_button = tk.Button(self.window, text=MODIFY, command=self.execute_update, width=13)
+        self.execute_update_button.grid(row=3, column=2, sticky="w", padx=70, pady=5)
 
-        self.execute_count_button = tk.Button(self.window, text=STATISTICS, command=self.execute_count)
-        self.execute_count_button.grid(row=3, column=1, padx=50, sticky="w",  pady=5)
+        self.execute_update_button = tk.Button(self.window, text=INSERT, command=self.execute_save, width=13)
+        self.execute_update_button.grid(row=3, column=3, sticky="w", padx=70, pady=5)
 
-        self.execute_word_button = tk.Button(self.window, text=WORD_COUNT, command=self.execute_word)
-        self.execute_word_button.grid(row=3, column=2, sticky="w", padx=70,  pady=5)
+        self.execute_count_button = tk.Button(self.window, text=STATISTICS, command=self.execute_count, width=13)
+        self.execute_count_button.grid(row=4, column=1, padx=50, sticky="w",  pady=5)
 
-        self.execute_mean_button = tk.Button(self.window, text=MEAN_AND_MEDIAN, command=self.execute_mean)
-        self.execute_mean_button.grid(row=3, column=3, sticky="w", padx=70, pady=5)
+        self.execute_word_button = tk.Button(self.window, text=WORD_COUNT, command=self.execute_word, width=13)
+        self.execute_word_button.grid(row=4, column=2, sticky="w", padx=70,  pady=5)
+
+        self.execute_mean_button = tk.Button(self.window, text=MEAN_AND_MEDIAN, command=self.execute_mean, width=13)
+        self.execute_mean_button.grid(row=4, column=3, sticky="w", padx=70, pady=5)
 
         self.lbl = ScrolledText(self.window, wrap=tk.WORD)
-        self.lbl.grid(row=4, column=1, columnspan=4, sticky="nsew", padx=20)
+        self.lbl.grid(row=5, column=1, columnspan=4, sticky="nsew", padx=20)
 
         self.duration = tk.Label(self.window, text=EXECUTION_TIME)
-        self.duration.grid(row=5, column=1, sticky="w", padx=20, pady=5)
+        self.duration.grid(row=6, column=1, sticky="w", padx=20, pady=5)
 
     def run(self):
         self.window.mainloop()
