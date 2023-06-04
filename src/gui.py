@@ -8,7 +8,7 @@ import pandas as pd
 
 from src.constants import POSTGRESQL, MONGODB, REDIS, \
     MEAN_AND_MEDIAN, WORD_COUNT, STATISTICS, \
-    EXECUTION_TIME, SELECT, DELETE, MODIFY, EXECUTE
+    EXECUTION_TIME, SELECT, DELETE, MODIFY, EXECUTE, INSERT
 from src.repositories import redis_repository, mongo_repository, postgres_repository
 
 pd.set_option('display.max_columns', 5)
@@ -27,7 +27,7 @@ class DatabaseOperationsApp:
         self.inputtxt_postgres.pack()
         self.execute_postgres = tk.Button(tab_postgres, text=EXECUTE, command=self.execute_query)
         self.execute_postgres.pack(pady=1, padx=5)
-        self.btn_save_postgres = tk.Button(tab_postgres, text=SELECT, command=self.execute_save)
+        self.btn_save_postgres = tk.Button(tab_postgres, text=INSERT, command=self.execute_save)
         self.btn_save_postgres.pack(pady=1, padx=5)
         self.btn_delete_postgres = tk.Button(tab_postgres, text=DELETE, command=self.execute_delete)
         self.btn_delete_postgres.pack(pady=1, padx=5)
@@ -50,7 +50,7 @@ class DatabaseOperationsApp:
         self.inputtxt_mongo.pack()
         self.execute_mongo = tk.Button(tab_mongo, text=EXECUTE, command=self.execute_query)
         self.execute_mongo.pack(pady=1, padx=5)
-        self.btn_save_mongo = tk.Button(tab_mongo, text=SELECT, command=self.execute_save)
+        self.btn_save_mongo = tk.Button(tab_mongo, text=INSERT, command=self.execute_save)
         self.btn_save_mongo.pack(pady=1, padx=5)
         self.btn_delete_mongo = tk.Button(tab_mongo, text=DELETE, command=self.execute_delete)
         self.btn_delete_mongo.pack(pady=1, padx=5)
@@ -73,7 +73,7 @@ class DatabaseOperationsApp:
         self.inputtxt_redis.pack()
         self.execute_redis = tk.Button(tab_redis, text=SELECT, command=self.execute_query)
         self.execute_redis.pack(pady=1, padx=5)
-        self.btn_save_redis = tk.Button(tab_redis, text=SELECT, command=self.execute_save)
+        self.btn_save_redis = tk.Button(tab_redis, text=INSERT, command=self.execute_save)
         self.btn_save_redis.pack(pady=1, padx=5)
         self.btn_delete_redis = tk.Button(tab_redis, text=DELETE, command=self.execute_delete)
         self.btn_delete_redis.pack(pady=1, padx=5)
@@ -101,7 +101,14 @@ class DatabaseOperationsApp:
     def switch_tab(self, event):
         self.tab_control.index(self.tab_control.select())
 
-    def execute_save(self, db_name):
+    def execute_save(self):
+        selected_db = self.get_current_tab_name()
+        if selected_db == POSTGRESQL:
+            inp = self.inputtxt_postgres.get(1.0, "end-1c")
+            res = postgres_repository.execute_insert(inp)
+            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.insertDurations[-1]))
+            print("query w PostgreSQL")
+            self.lbl_postgres.insert(tk.END, str(res.head()))
         pass
 
     def get_current_tab_name(self):
@@ -136,8 +143,8 @@ class DatabaseOperationsApp:
             print("query danych w Redis")
             self.lbl_redis.insert(tk.END, str(res.head()))
 
-    def execute_delete(self, db_name):
-        selected_db = db_name
+    def execute_delete(self):
+        selected_db = self.get_current_tab_name()
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             postgres_repository.execute_delete(inp)
@@ -154,8 +161,8 @@ class DatabaseOperationsApp:
             redis_repository.execute_delete(keys=keys)
             self.duration_mongo.config(text="czas wykonania: " + str(redis_repository.deleteDurations[-1]))
 
-    def execute_update(self, db_name):
-        selected_db = db_name
+    def execute_update(self):
+        selected_db = self.get_current_tab_name()
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             postgres_repository.execute_update(inp)
@@ -172,8 +179,8 @@ class DatabaseOperationsApp:
             redis_repository.execute_update_dict(key=key, field=field[0], value=field[1])
             print("update danych w Redis")
 
-    def clear_data(self, db_name):
-        selected_db = db_name
+    def clear_data(self):
+        selected_db = self.get_current_tab_name()
         if selected_db == POSTGRESQL:
             postgres_repository.delete_all()
             print("czyszczenie danych z Postgresql")
@@ -184,8 +191,8 @@ class DatabaseOperationsApp:
             redis_repository.execute_delete()
             print("czyszczenie danych z Redis")
 
-    def execute_count(self, db_name):
-        selected_db = db_name
+    def execute_count(self):
+        selected_db = self.get_current_tab_name()
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             res = postgres_repository.execute_count(inp)
@@ -209,8 +216,8 @@ class DatabaseOperationsApp:
     def print_count(self, label: ScrolledText, res):
         label.insert(tk.END, "liczba rekordow " + str(res))
 
-    def execute_word(self, db_name):
-        selected_db = db_name
+    def execute_word(self):
+        selected_db = self.get_current_tab_name()
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             res = postgres_repository.execute_word(inp)
@@ -235,8 +242,8 @@ class DatabaseOperationsApp:
     def print_word(self, label: ScrolledText, res):
         label.insert(tk.END, "liczba wystąpien " + str(res))
 
-    def execute_mean(self, db_name):
-        selected_db = db_name
+    def execute_mean(self):
+        selected_db = self.get_current_tab_name()
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             mean, mode = postgres_repository.execute_mean(inp)

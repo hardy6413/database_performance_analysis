@@ -85,7 +85,7 @@ def execute_count(stmt):
     plt.ylabel("count")
     plt.hist(df[df.columns[1]])
     os.makedirs(os.path.dirname('results/'), exist_ok=True)
-    plt.savefig('./results/hist.png')
+    plt.savefig('./results/hist_redis.png')
     return count
 
 

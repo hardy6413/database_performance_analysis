@@ -1,4 +1,8 @@
+import os
 import time
+
+import pandas as pd
+from matplotlib import pyplot as plt
 
 from src.database_connection import get_redis_connection
 
@@ -211,15 +215,41 @@ def execute_update_property(key, property_name, value):
 
 
 def execute_count(stmt):
-    pass
+    start = time.time()
+    res = pd.DataFrame(execute_query())
+    count = len(res.index)
+    end = time.time()
+    countDurations.append(end - start)
+    plt.figure()
+    plt.xlabel(res.columns[0])
+    plt.ylabel("count")
+    plt.hist(res[res.columns[0]])
+    os.makedirs(os.path.dirname('results/'), exist_ok=True)
+    plt.savefig('./results/hist_redis.png')
+    return count
 
 
 def execute_mean(stmt):
-    pass
+    start = time.time()
+    res = pd.DataFrame(execute_query())
+    means, median = {}, {}
+    for col in res.columns:
+        means.update({col: res[col].mean()})
+        median.update({col: res[col].median()})
+
+    end = time.time()
+    meanDurations.append(end - start)
+    return means, median
 
 
 def execute_word(stmt):
-    pass
+    stmt, new_values = stmt.split(';', 1)
+    start = time.time()
+    res = pd.DataFrame(execute_query())
+    amount = res[res.columns[0]].str.count(str(new_values)).sum()
+    end = time.time()
+    wordDurations.append(end - start)
+    return amount
 
 
 def close_connection():

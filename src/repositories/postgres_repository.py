@@ -5,7 +5,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from src.constants import SCHEMA_NAME, SELECT_OPERATION, WHERE, DELETE_OPERATION, UPDATE_OPERATION, \
-    TABLE_NAME, SET, FROM
+    TABLE_NAME, SET, FROM, INSERT_OPERATION, VALUES, FOOTBALLERS_PROPERTIES
 from src.database_connection import get_alchemy_engine, get_postgres_connection
 
 postgres_conn = get_postgres_connection()
@@ -14,6 +14,7 @@ alchemy_conn = get_alchemy_engine()
 selectDurations = []
 deleteDurations = []
 updateDurations = []
+insertDurations = []
 countDurations = []
 meanDurations = []
 wordDurations = []
@@ -53,6 +54,19 @@ def execute_delete(stmt):
     deleteDurations.append(end - start)
 
 
+def execute_insert(stmt):
+    query = INSERT_OPERATION + TABLE_NAME + '(' + FOOTBALLERS_PROPERTIES + ')' + VALUES + '(' + stmt + ')'
+    start = time.time()
+
+    cursor = postgres_conn.cursor()
+    cursor.execute(query)
+    postgres_conn.commit()
+    cursor.close()
+
+    end = time.time()
+    insertDurations.append(end - start)
+
+
 def execute_update(stmt):
     query = UPDATE_OPERATION + TABLE_NAME + SET + stmt
     start = time.time()
@@ -81,7 +95,7 @@ def execute_count(stmt):
     plt.ylabel("count")
     plt.hist(res[res.columns[0]])
     os.makedirs(os.path.dirname('results/'), exist_ok=True)
-    plt.savefig('./results/hist.png')
+    plt.savefig('./results/hist_postgres.png')
     return count
 
 
