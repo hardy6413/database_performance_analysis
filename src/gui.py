@@ -146,7 +146,8 @@ class DatabaseOperationsApp:
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             mongo_repository.execute_delete(inp)
             self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.deleteDurations[-1]))
-        elif selected_db == REDIS: #TODO
+        elif selected_db == REDIS:
+            # FIXME
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             filters_dict = json.loads(inp)
             keys = filters_dict["key"]
@@ -198,8 +199,11 @@ class DatabaseOperationsApp:
             self.print_count(self.lbl_mongo, res)
             print("update danych w MongoDB")
         elif selected_db == REDIS:
-            # inp = self.inputtxt_redis.get(1.0, "end-1c")
-            # res = redis_repository.execute_query(inp)
+            # FIXME:
+            inp = self.inputtxt_redis.get(1.0, "end-1c")
+            res = redis_repository.execute_count(inp)
+            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.countDurations[-1]))
+            self.print_count(self.lbl_redis, res)
             print("update danych w Redis")
 
     def print_count(self, label: ScrolledText, res):
@@ -221,8 +225,11 @@ class DatabaseOperationsApp:
             self.print_word(self.lbl_mongo, res)
             print("update danych w MongoDB")
         elif selected_db == REDIS:
-            # inp = self.inputtxt_redis.get(1.0, "end-1c")
-            # res = redis_repository.execute_query(inp)
+            # FIXME:
+            inp = self.inputtxt_redis.get(1.0, "end-1c")
+            res = redis_repository.execute_word(inp)
+            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.wordDurations[-1]))
+            self.print_word(self.lbl_redis, res)
             print("update danych w Redis")
 
     def print_word(self, label: ScrolledText, res):
@@ -242,8 +249,11 @@ class DatabaseOperationsApp:
             self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.meanDurations[-1]))
             self.print_mean(self.lbl_mongo, mean, mode)
         elif selected_db == REDIS:
-            # inp = self.inputtxt_redis.get(1.0, "end-1c")
-            # res = redis_repository.execute_query(inp)
+            # FIXME
+            inp = self.inputtxt_redis.get(1.0, "end-1c")
+            mean, mode = redis_repository.execute_mean(inp)
+            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.meanDurations[-1]))
+            self.print_mean(self.lbl_mongo, mean, mode)
             print("update danych w Redis")
 
     def print_mean(self, label: ScrolledText, mean, mode):

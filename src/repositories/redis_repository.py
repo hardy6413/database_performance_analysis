@@ -1,3 +1,5 @@
+import time
+
 from src.database_connection import get_redis_connection
 
 redis_conn = get_redis_connection()
@@ -132,20 +134,17 @@ def initialize_redis(data):
 
 
 def execute_delete(keys='*'):
+    start = time.time()
     for key in redis_conn.keys(keys):
         redis_conn.delete(key)
-
-
-def execute_update_full_row(key, value):
-    redis_conn.set(key, value)
-
-
-def execute_update_property(key, property_name, value):
-    redis_conn.set(key, value)
+    end = time.time()
+    deleteDurations.append(end - start)
 
 
 def execute_query(key: str = '*', query_filters: dict = None, filter_operator: str = 'OR'):
     values = []
+    start = time.time()
+
     for key in redis_conn.keys(key):
         values_dict = redis_conn.hgetall(key)
         if query_filters is not None:
@@ -157,28 +156,71 @@ def execute_query(key: str = '*', query_filters: dict = None, filter_operator: s
                     values.append(values_dict)
             else:
                 raise ValueError("Invalid filter_operator. Must be 'OR' or 'AND'.")
-        else:  # get all
+        else:
             values.append(values_dict)
+    end = time.time()
+    selectDurations.append(end - start)
     return values
 
 
 def execute_get_by_key(key):
-    return redis_conn.get(key)
+    start = time.time()
+    result = redis_conn.get(key)
+    end = time.time()
+    selectDurations.append(end - start)
+    return result
 
 
 def execute_get_all():
-    return redis_conn.hgetall()
+    start = time.time()
+    result = redis_conn.hgetall()
+    end = time.time()
+    selectDurations.append(end - start)
+    return result
 
 
 def execute_update_dict(key, field, value):
+    start = time.time()
     redis_conn.hset(key, field, value)
+    end = time.time()
+    updateDurations.append(end - start)
 
 
+@DeprecationWarning
 def execute_update_many_dict(key, field_value_dict):
+    start = time.time()
     redis_conn.hmset(key, field_value_dict)
+    end = time.time()
+    updateDurations.append(end - start)
+
+
+@DeprecationWarning
+def execute_update_full_row(key, value):
+    start = time.time()
+    redis_conn.set(key, value)
+    end = time.time()
+    updateDurations.append(end - start)
+
+
+@DeprecationWarning
+def execute_update_property(key, property_name, value):
+    start = time.time()
+    redis_conn.set(key, value)
+    end = time.time()
+    updateDurations.append(end - start)
+
+
+def execute_count(stmt):
+    pass
+
+
+def execute_mean(stmt):
+    pass
+
+
+def execute_word(stmt):
+    pass
 
 
 def close_connection():
     redis_conn.close()
-
-
