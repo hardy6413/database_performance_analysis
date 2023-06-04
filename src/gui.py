@@ -106,13 +106,13 @@ class DatabaseOperationsApp:
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             res = postgres_repository.execute_insert(inp)
-            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.insertDurations[-1]))
+            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.insert_durations[-1]))
             print("query w PostgreSQL")
             self.lbl_postgres.insert(tk.END, str(res.head()))
         elif selected_db == MONGODB:
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             res = mongo_repository.execute_insert(inp)
-            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.insertDurations[-1]))
+            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.insert_durations[-1]))
             print("query danych w MongoDB")
             self.lbl_mongo.insert(tk.END, str(res.head()))
         elif selected_db == REDIS:
@@ -127,13 +127,13 @@ class DatabaseOperationsApp:
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             res = postgres_repository.execute_query(inp)
-            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.selectDurations[-1]))
+            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.select_durations[-1]))
             print("query w PostgreSQL")
             self.lbl_postgres.insert(tk.END, str(res.head()))
         elif selected_db == MONGODB:
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             res = mongo_repository.execute_query(inp)
-            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.selectDurations[-1]))
+            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.select_durations[-1]))
             print("query danych w MongoDB")
             self.lbl_mongo.insert(tk.END, str(res.head()))
         elif selected_db == REDIS:
@@ -155,29 +155,29 @@ class DatabaseOperationsApp:
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             postgres_repository.execute_delete(inp)
-            self.duration_mongo.config(text="czas wykonania: " + str(postgres_repository.deleteDurations[-1]))
+            self.duration_mongo.config(text="czas wykonania: " + str(postgres_repository.delete_durations[-1]))
         elif selected_db == MONGODB:
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             mongo_repository.execute_delete(inp)
-            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.deleteDurations[-1]))
+            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.delete_durations[-1]))
         elif selected_db == REDIS:
             # FIXME
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             filters_dict = json.loads(inp)
             keys = filters_dict["key"]
             redis_repository.execute_delete(keys=keys)
-            self.duration_mongo.config(text="czas wykonania: " + str(redis_repository.deleteDurations[-1]))
+            self.duration_mongo.config(text="czas wykonania: " + str(redis_repository.delete_durations[-1]))
 
     def execute_update(self):
         selected_db = self.get_current_tab_name()
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             postgres_repository.execute_update(inp)
-            self.duration_mongo.config(text="czas wykonania: " + str(postgres_repository.updateDurations[-1]))
+            self.duration_mongo.config(text="czas wykonania: " + str(postgres_repository.update_durations[-1]))
         elif selected_db == MONGODB:
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             mongo_repository.execute_update(inp)
-            self.duration_postgres.config(text="czas wykonania: " + str(mongo_repository.updateDurations[-1]))
+            self.duration_postgres.config(text="czas wykonania: " + str(mongo_repository.update_durations[-1]))
         elif selected_db == REDIS:
             inp = self.inputtxt_redis.get(1.0, "end-1c")
             filters_dict = json.loads(inp)
@@ -203,20 +203,20 @@ class DatabaseOperationsApp:
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             res = postgres_repository.execute_count(inp)
-            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.countDurations[-1]))
+            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.count_durations[-1]))
             self.print_count(self.lbl_postgres, res)
             print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             res = mongo_repository.execute_count(inp)
-            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.countDurations[-1]))
+            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.count_durations[-1]))
             self.print_count(self.lbl_mongo, res)
             print("update danych w MongoDB")
         elif selected_db == REDIS:
             # FIXME:
             inp = self.inputtxt_redis.get(1.0, "end-1c")
             res = redis_repository.execute_count(inp)
-            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.countDurations[-1]))
+            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.count_durations[-1]))
             self.print_count(self.lbl_redis, res)
             print("update danych w Redis")
 
@@ -228,21 +228,21 @@ class DatabaseOperationsApp:
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             res = postgres_repository.execute_word(inp)
-            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.wordDurations[-1]))
+            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.word_durations[-1]))
             self.print_word(self.lbl_postgres, res)
 
             print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             res = mongo_repository.execute_word(inp)
-            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.wordDurations[-1]))
+            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.word_durations[-1]))
             self.print_word(self.lbl_mongo, res)
             print("update danych w MongoDB")
         elif selected_db == REDIS:
             # FIXME:
             inp = self.inputtxt_redis.get(1.0, "end-1c")
             res = redis_repository.execute_word(inp)
-            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.wordDurations[-1]))
+            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.word_durations[-1]))
             self.print_word(self.lbl_redis, res)
             print("update danych w Redis")
 
@@ -254,19 +254,19 @@ class DatabaseOperationsApp:
         if selected_db == POSTGRESQL:
             inp = self.inputtxt_postgres.get(1.0, "end-1c")
             mean, mode = postgres_repository.execute_mean(inp)
-            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.meanDurations[-1]))
+            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.mean_durations[-1]))
             self.print_mean(self.lbl_postgres, mean, mode)
             print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
             inp = self.inputtxt_mongo.get(1.0, "end-1c")
             mean, mode = mongo_repository.execute_mean(inp)
-            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.meanDurations[-1]))
+            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.mean_durations[-1]))
             self.print_mean(self.lbl_mongo, mean, mode)
         elif selected_db == REDIS:
             # FIXME
             inp = self.inputtxt_redis.get(1.0, "end-1c")
             mean, mode = redis_repository.execute_mean(inp)
-            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.meanDurations[-1]))
+            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.mean_durations[-1]))
             self.print_mean(self.lbl_mongo, mean, mode)
             print("update danych w Redis")
 

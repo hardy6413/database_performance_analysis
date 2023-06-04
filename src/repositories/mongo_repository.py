@@ -11,13 +11,13 @@ import time
 mongo_client = get_mongo_client()
 collection = mongo_client[SCHEMA_NAME]
 
-selectDurations = []
-deleteDurations = []
-updateDurations = []
-insertDurations = []
-countDurations = []
-meanDurations = []
-wordDurations = []
+select_durations = []
+delete_durations = []
+update_durations = []
+insert_durations = []
+count_durations = []
+mean_durations = []
+word_durations = []
 
 
 def initialize_mongo(data):
@@ -39,7 +39,7 @@ def execute_insert(stmt):
     start = time.time()
     collection.insert_one(dict(stmt))
     end = time.time()
-    insertDurations.append(end - start)
+    insert_durations.append(end - start)
 
 
 def execute_query(stmt):
@@ -49,7 +49,7 @@ def execute_query(stmt):
     start = time.time()
     x = collection.find(dict(stmt))
     end = time.time()
-    selectDurations.append(end - start)
+    select_durations.append(end - start)
     df = pd.DataFrame(list(x))
     return df
 
@@ -61,7 +61,7 @@ def execute_delete(stmt):
     start = time.time()
     collection.delete_one(dict(stmt))
     end = time.time()
-    deleteDurations.append(end - start)
+    delete_durations.append(end - start)
 
 
 def execute_update(stmt):
@@ -75,7 +75,7 @@ def execute_update(stmt):
     start = time.time()
     collection.update_many(dict(stmt),  {"$set": dict(new_values)})
     end = time.time()
-    updateDurations.append(end - start)
+    update_durations.append(end - start)
 
 
 def execute_count(stmt):
@@ -86,7 +86,7 @@ def execute_count(stmt):
     start = time.time()
     x = collection.find(dict(stmt), {new_values: 1})
     end = time.time()
-    countDurations.append(end - start)
+    count_durations.append(end - start)
     df = pd.DataFrame(list(x))
     count = len(df.index)
 
@@ -111,7 +111,7 @@ def execute_mean(stmt):
     start = time.time()
     x = collection.find(dict(stmt), t)
     end = time.time()
-    countDurations.append(end - start)
+    count_durations.append(end - start)
     df = pd.DataFrame(list(x))
     means, median = {}, {}
     for col in df.columns:
@@ -119,7 +119,7 @@ def execute_mean(stmt):
         median.update({col: df[col].median()})
 
     end = time.time()
-    meanDurations.append(end - start)
+    mean_durations.append(end - start)
     return means, median
 
 
@@ -133,5 +133,5 @@ def execute_word(stmt):
     df = pd.DataFrame(list(x))
     amount = df[df.columns[1]].str.count(str(word)).sum()
     end = time.time()
-    wordDurations.append(end - start)
+    word_durations.append(end - start)
     return amount

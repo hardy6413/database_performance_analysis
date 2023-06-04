@@ -8,12 +8,13 @@ from src.database_connection import get_redis_connection
 
 redis_conn = get_redis_connection()
 
-selectDurations = []
-deleteDurations = []
-updateDurations = []
-countDurations = []
-meanDurations = []
-wordDurations = []
+select_durations = []
+delete_durations = []
+update_durations = []
+insert_durations = []
+count_durations = []
+mean_durations = []
+word_durations = []
 
 
 def initialize_redis(data):
@@ -142,7 +143,7 @@ def execute_delete(keys='*'):
     for key in redis_conn.keys(keys):
         redis_conn.delete(key)
     end = time.time()
-    deleteDurations.append(end - start)
+    delete_durations.append(end - start)
 
 
 def execute_query(key: str = '*', query_filters: dict = None, filter_operator: str = 'OR'):
@@ -163,7 +164,7 @@ def execute_query(key: str = '*', query_filters: dict = None, filter_operator: s
         else:
             values.append(values_dict)
     end = time.time()
-    selectDurations.append(end - start)
+    select_durations.append(end - start)
     return values
 
 
@@ -171,7 +172,7 @@ def execute_get_by_key(key):
     start = time.time()
     result = redis_conn.get(key)
     end = time.time()
-    selectDurations.append(end - start)
+    select_durations.append(end - start)
     return result
 
 
@@ -179,7 +180,7 @@ def execute_get_all():
     start = time.time()
     result = redis_conn.hgetall()
     end = time.time()
-    selectDurations.append(end - start)
+    select_durations.append(end - start)
     return result
 
 
@@ -187,7 +188,7 @@ def execute_update_dict(key, field, value):
     start = time.time()
     redis_conn.hset(key, field, value)
     end = time.time()
-    updateDurations.append(end - start)
+    update_durations.append(end - start)
 
 
 @DeprecationWarning
@@ -195,7 +196,7 @@ def execute_update_many_dict(key, field_value_dict):
     start = time.time()
     redis_conn.hmset(key, field_value_dict)
     end = time.time()
-    updateDurations.append(end - start)
+    update_durations.append(end - start)
 
 
 @DeprecationWarning
@@ -203,7 +204,7 @@ def execute_update_full_row(key, value):
     start = time.time()
     redis_conn.set(key, value)
     end = time.time()
-    updateDurations.append(end - start)
+    update_durations.append(end - start)
 
 
 @DeprecationWarning
@@ -211,7 +212,7 @@ def execute_update_property(key, property_name, value):
     start = time.time()
     redis_conn.set(key, value)
     end = time.time()
-    updateDurations.append(end - start)
+    update_durations.append(end - start)
 
 
 def execute_count(stmt):
@@ -219,7 +220,7 @@ def execute_count(stmt):
     res = pd.DataFrame(execute_query())
     count = len(res.index)
     end = time.time()
-    countDurations.append(end - start)
+    count_durations.append(end - start)
     plt.figure()
     plt.xlabel(res.columns[0])
     plt.ylabel("count")
@@ -238,7 +239,7 @@ def execute_mean(stmt):
         median.update({col: res[col].median()})
 
     end = time.time()
-    meanDurations.append(end - start)
+    mean_durations.append(end - start)
     return means, median
 
 
@@ -248,7 +249,7 @@ def execute_word(stmt):
     res = pd.DataFrame(execute_query())
     amount = res[res.columns[0]].str.count(str(new_values)).sum()
     end = time.time()
-    wordDurations.append(end - start)
+    word_durations.append(end - start)
     return amount
 
 
