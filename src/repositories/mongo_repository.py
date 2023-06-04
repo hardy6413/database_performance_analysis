@@ -49,7 +49,7 @@ def execute_delete(stmt):
         stmt = ast.literal_eval(stmt)
 
     start = time.time()
-    x = collection.delete_many(dict(stmt))
+    collection.delete_many(dict(stmt))
     end = time.time()
     deleteDurations.append(end - start)
 
@@ -63,7 +63,7 @@ def execute_update(stmt):
         new_values = ast.literal_eval(new_values)
 
     start = time.time()
-    x = collection.update_many(dict(stmt), dict(new_values))
+    collection.update_many(dict(stmt), dict(new_values))
     end = time.time()
     updateDurations.append(end - start)
 
@@ -103,16 +103,14 @@ def execute_mean(stmt):
     end = time.time()
     countDurations.append(end - start)
     df = pd.DataFrame(list(x))
-
-    means = {}
-    mediane = {}
+    means, median = {}, {}
     for col in df.columns:
         means.update({col: df[col].mean()})
-        mediane.update({col: df[col].median()})
+        median.update({col: df[col].median()})
 
     end = time.time()
     meanDurations.append(end - start)
-    return means, mediane
+    return means, median
 
 
 def execute_word(stmt):
@@ -127,5 +125,3 @@ def execute_word(stmt):
     end = time.time()
     wordDurations.append(end - start)
     return amount
-
-

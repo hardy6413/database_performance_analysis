@@ -14,7 +14,7 @@ def initialize_databases():
 
 
 def clear_databases():
-    redis_repository.delete_all()
+    redis_repository.execute_delete()
     mongo_repository.delete_all()
     postgres_repository.delete_all()
 

@@ -88,8 +88,7 @@ def execute_count(stmt):
 def execute_mean(stmt):
     start = time.time()
     res = pd.read_sql_query(stmt, postgres_conn)
-    means = {}
-    median = {}
+    means, median = {}, {}
     for col in res.columns:
         means.update({col: res[col].mean()})
         median.update({col: res[col].median()})
