@@ -14,7 +14,7 @@ pd.set_option('display.max_columns', 5)
 class DatabaseOperationsApp:
     def __init__(self):
         self.window = tk.Tk()
-        self.window.title("Wybór bazy danych")
+        self.window.title("Analiza Systemów Zarządzenia Bazami Danych")
         self.window.geometry("700x700")
         self.window.resizable(False, False)
 
@@ -130,7 +130,6 @@ class DatabaseOperationsApp:
             res = redis_repository.execute_count(inp)
             self.duration.config(text="czas wykonania: " + str(redis_repository.count_durations[-1]))
             self.print_count(self.lbl, res)
-            print("update danych w Redis")
 
     def execute_word(self):
         selected_db = self.db_selection.get()
@@ -139,19 +138,15 @@ class DatabaseOperationsApp:
             res = postgres_repository.execute_word(inp)
             self.duration.config(text="czas wykonania: " + str(postgres_repository.word_durations[-1]))
             self.print_word(self.lbl, res)
-
-            print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
             res = mongo_repository.execute_word(inp)
             self.duration.config(text="czas wykonania: " + str(mongo_repository.word_durations[-1]))
             self.print_word(self.lbl, res)
-            print("update danych w MongoDB")
         elif selected_db == REDIS:
             # FIXME:
             res = redis_repository.execute_word(inp)
             self.duration.config(text="czas wykonania: " + str(redis_repository.word_durations[-1]))
             self.print_word(self.lbl, res)
-            print("update danych w Redis")
 
     def execute_mean(self):
         selected_db = self.db_selection.get()
@@ -160,7 +155,6 @@ class DatabaseOperationsApp:
             mean, mode = postgres_repository.execute_mean(inp)
             self.duration.config(text="czas wykonania: " + str(postgres_repository.mean_durations[-1]))
             self.print_mean(self.lbl, mean, mode)
-            print("statystyki liczbowe w PostgreSQL")
         elif selected_db == MONGODB:
             mean, mode = mongo_repository.execute_mean(inp)
             self.duration.config(text="czas wykonania: " + str(mongo_repository.mean_durations[-1]))
@@ -170,7 +164,6 @@ class DatabaseOperationsApp:
             mean, mode = redis_repository.execute_mean(inp)
             self.duration.config(text="czas wykonania: " + str(redis_repository.mean_durations[-1]))
             self.print_mean(self.lbl, mean, mode)
-            print("update danych w Redis")
 
     def print_word(self, label: ScrolledText, res):
         label.insert(tk.END, "liczba wystąpien " + str(res))

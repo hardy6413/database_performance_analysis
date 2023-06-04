@@ -138,7 +138,7 @@ def initialize_redis(data):
     pipe.execute()
 
 
-def execute_delete(keys):
+def execute_delete(keys=""):
     if keys == "":
         keys = '*'
     start = time.time()

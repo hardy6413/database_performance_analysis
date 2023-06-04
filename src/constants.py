@@ -29,7 +29,6 @@ INSERT = "Dodaj"
 SAVE = "Zapisz"
 DELETE = "Usuń"
 MODIFY = "Modyfikuj"
-# EXECUTE = "Wykonaj Zapytanie"
 
 # POSTGRESQL OPERATIONS
 TABLE_NAME = " FOOTBALLERS "

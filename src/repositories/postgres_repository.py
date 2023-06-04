@@ -24,14 +24,6 @@ def initialize_postgres(data):
     data.to_sql(SCHEMA_NAME, if_exists='append', index=False, con=alchemy_conn)
 
 
-def delete_all():
-    cursor = postgres_conn.cursor()
-    query = DELETE_OPERATION + FROM + SCHEMA_NAME
-    cursor.execute(query)
-    postgres_conn.commit()
-    cursor.close()
-
-
 def execute_query(stmt):
     query = SELECT_OPERATION + stmt + FROM + TABLE_NAME
     start = time.time()
@@ -41,8 +33,11 @@ def execute_query(stmt):
     return res
 
 
-def execute_delete(stmt):
-    query = DELETE_OPERATION + FROM + TABLE_NAME + WHERE + stmt
+def execute_delete(stmt=""):
+    if stmt == "":
+        query = DELETE_OPERATION + FROM + SCHEMA_NAME
+    else:
+        query = DELETE_OPERATION + FROM + TABLE_NAME + WHERE + stmt
     start = time.time()
 
     cursor = postgres_conn.cursor()
