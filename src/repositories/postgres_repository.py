@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 from src.constants import SCHEMA_NAME, SELECT_OPERATION, WHERE, DELETE_OPERATION, UPDATE_OPERATION, \
     TABLE_NAME, SET, FROM, INSERT_OPERATION, VALUES, FOOTBALLERS_PROPERTIES
 from src.database_connection import get_alchemy_engine, get_postgres_connection
+from src.statistics_helpers import calculate_mean_and_median
 
 postgres_conn = get_postgres_connection()
 alchemy_conn = get_alchemy_engine()
@@ -97,11 +98,7 @@ def execute_count(stmt):
 def execute_mean(stmt):
     start = time.time()
     res = pd.read_sql_query(stmt, postgres_conn)
-    means, median = {}, {}
-    for col in res.columns:
-        means.update({col: res[col].mean()})
-        median.update({col: res[col].median()})
-
+    means, median = calculate_mean_and_median(res)
     end = time.time()
     mean_durations.append(end - start)
     return means, median
@@ -115,3 +112,6 @@ def execute_word(stmt):
     end = time.time()
     word_durations.append(end - start)
     return amount
+
+
+

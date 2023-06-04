@@ -8,6 +8,8 @@ from src.constants import SCHEMA_NAME
 from src.database_connection import get_mongo_client
 import time
 
+from src.statistics_helpers import calculate_mean_and_median
+
 mongo_client = get_mongo_client()
 collection = mongo_client[SCHEMA_NAME]
 
@@ -112,12 +114,8 @@ def execute_mean(stmt):
     x = collection.find(dict(stmt), t)
     end = time.time()
     count_durations.append(end - start)
-    df = pd.DataFrame(list(x))
-    means, median = {}, {}
-    for col in df.columns:
-        means.update({col: df[col].mean()})
-        median.update({col: df[col].median()})
-
+    res = pd.DataFrame(list(x))
+    means, median = calculate_mean_and_median(res)
     end = time.time()
     mean_durations.append(end - start)
     return means, median
