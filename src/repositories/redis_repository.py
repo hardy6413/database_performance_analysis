@@ -1,3 +1,4 @@
+import json
 import os
 import time
 
@@ -161,8 +162,8 @@ def execute_get_by_key(stmt):
     return result
 
 
-def execute_insert(data: dict):
-    first_key = next(iter(data))
+def execute_insert(data):
+    first_key = next(iter(json.loads(data)))
     key = data.pop(first_key)
     start = time.time()
     redis_conn.hmset(key, data)
@@ -171,7 +172,7 @@ def execute_insert(data: dict):
 
 
 def execute_update(data):
-    first_key = next(iter(data))
+    first_key = next(iter(json.loads(data)))
     key = data.pop(first_key)
     start = time.time()
     redis_conn.hmset(key, data)
