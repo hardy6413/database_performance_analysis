@@ -101,23 +101,6 @@ class DatabaseOperationsApp:
     def switch_tab(self, event):
         self.tab_control.index(self.tab_control.select())
 
-    def execute_save(self):
-        selected_db = self.get_current_tab_name()
-        if selected_db == POSTGRESQL:
-            inp = self.inputtxt_postgres.get(1.0, "end-1c")
-            res = postgres_repository.execute_insert(inp)
-            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.insert_durations[-1]))
-            print("query w PostgreSQL")
-            self.lbl_postgres.insert(tk.END, str(res.head()))
-        elif selected_db == MONGODB:
-            inp = self.inputtxt_mongo.get(1.0, "end-1c")
-            res = mongo_repository.execute_insert(inp)
-            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.insert_durations[-1]))
-            print("query danych w MongoDB")
-            self.lbl_mongo.insert(tk.END, str(res.head()))
-        elif selected_db == REDIS:
-            print("query danych w Redis")
-
     def get_current_tab_name(self):
         current_tab_index = self.tab_control.select()
         return self.tab_control.tab(current_tab_index, option="text")
@@ -137,18 +120,11 @@ class DatabaseOperationsApp:
             print("query danych w MongoDB")
             self.lbl_mongo.insert(tk.END, str(res.head()))
         elif selected_db == REDIS:
-            print("query danych w Redis")
             inp = self.inputtxt_redis.get(1.0, "end-1c")
-            operator = re.findall(r'\s(AND|OR)\s', inp)[0]
-
-            filters_dict = json.loads(inp)
-            key = filters_dict["key"]
-            if key is not None:
-                del filters_dict["key"]
-
-            res = redis_repository.execute_query(key=key, query_filters=filters_dict, filter_operator=operator)
+            res = redis_repository.execute_get_by_key(inp)
             print("query danych w Redis")
-            self.lbl_redis.insert(tk.END, str(res.head()))
+            self.duration_mongo.config(text="czas wykonania: " + str(redis_repository.select_durations[-1]))
+            self.lbl_redis.insert(tk.END, str(res))
 
     def execute_delete(self):
         selected_db = self.get_current_tab_name()
@@ -161,12 +137,30 @@ class DatabaseOperationsApp:
             mongo_repository.execute_delete(inp)
             self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.delete_durations[-1]))
         elif selected_db == REDIS:
-            # FIXME
-            inp = self.inputtxt_mongo.get(1.0, "end-1c")
-            filters_dict = json.loads(inp)
-            keys = filters_dict["key"]
-            redis_repository.execute_delete(keys=keys)
+            inp = self.inputtxt_redis.get(1.0, "end-1c")
+            redis_repository.execute_delete(keys=inp)
             self.duration_mongo.config(text="czas wykonania: " + str(redis_repository.delete_durations[-1]))
+
+    def execute_save(self):
+        selected_db = self.get_current_tab_name()
+        if selected_db == POSTGRESQL:
+            inp = self.inputtxt_postgres.get(1.0, "end-1c")
+            res = postgres_repository.execute_insert(inp)
+            self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.insert_durations[-1]))
+            print("query w PostgreSQL")
+            self.lbl_postgres.insert(tk.END, str(res.head()))
+        elif selected_db == MONGODB:
+            inp = self.inputtxt_mongo.get(1.0, "end-1c")
+            res = mongo_repository.execute_insert(inp)
+            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.insert_durations[-1]))
+            print("query danych w MongoDB")
+            self.lbl_mongo.insert(tk.END, str(res.head()))
+        elif selected_db == REDIS:
+            inp = self.inputtxt_redis.get(1.0, "end-1c")
+            new_item = json.loads(inp)
+            redis_repository.execute_insert(new_item)
+            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.insert_durations[-1]))
+            print("query danych w Redis")
 
     def execute_update(self):
         selected_db = self.get_current_tab_name()
@@ -180,23 +174,10 @@ class DatabaseOperationsApp:
             self.duration_postgres.config(text="czas wykonania: " + str(mongo_repository.update_durations[-1]))
         elif selected_db == REDIS:
             inp = self.inputtxt_redis.get(1.0, "end-1c")
-            filters_dict = json.loads(inp)
-            key = filters_dict["key"]
-            field = next(iter(filters_dict.items()))
-            redis_repository.execute_update_dict(key=key, field=field[0], value=field[1])
+            data = json.loads(inp)
+            redis_repository.execute_update(data)
+            self.duration_redis.config(text="czas wykonania: " + str(redis_repository.update_durations[-1]))
             print("update danych w Redis")
-
-    def clear_data(self):
-        selected_db = self.get_current_tab_name()
-        if selected_db == POSTGRESQL:
-            postgres_repository.delete_all()
-            print("czyszczenie danych z Postgresql")
-        elif selected_db == MONGODB:
-            mongo_repository.delete_all()
-            print("czyszczenie danych z MongoDB")
-        elif selected_db == REDIS:
-            redis_repository.execute_delete()
-            print("czyszczenie danych z Redis")
 
     def execute_count(self):
         selected_db = self.get_current_tab_name()
@@ -219,9 +200,6 @@ class DatabaseOperationsApp:
             self.duration_redis.config(text="czas wykonania: " + str(redis_repository.count_durations[-1]))
             self.print_count(self.lbl_redis, res)
             print("update danych w Redis")
-
-    def print_count(self, label: ScrolledText, res):
-        label.insert(tk.END, "liczba rekordow " + str(res))
 
     def execute_word(self):
         selected_db = self.get_current_tab_name()
@@ -246,9 +224,6 @@ class DatabaseOperationsApp:
             self.print_word(self.lbl_redis, res)
             print("update danych w Redis")
 
-    def print_word(self, label: ScrolledText, res):
-        label.insert(tk.END, "liczba wystąpien " + str(res))
-
     def execute_mean(self):
         selected_db = self.get_current_tab_name()
         if selected_db == POSTGRESQL:
@@ -270,5 +245,11 @@ class DatabaseOperationsApp:
             self.print_mean(self.lbl_mongo, mean, mode)
             print("update danych w Redis")
 
+    def print_word(self, label: ScrolledText, res):
+        label.insert(tk.END, "liczba wystąpien " + str(res))
+
     def print_mean(self, label: ScrolledText, mean, mode):
         label.insert(tk.END, "srednie  " + str(mean) + "\nmediany " + str(mode))
+
+    def print_count(self, label: ScrolledText, res):
+        label.insert(tk.END, "liczba rekordow " + str(res))

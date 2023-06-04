@@ -132,13 +132,14 @@ def initialize_redis(data):
             'gk': str(row['gk']),
             'player_face_url': str(row['player_face_url'])
         }
-        # hmset vs hset
         pipe.hmset(key, {str(k): str(v) for k, v in record.items()})
 
     pipe.execute()
 
 
-def execute_delete(keys='*'):
+def execute_delete(keys):
+    if keys == "":
+        keys = '*'
     start = time.time()
     for key in redis_conn.keys(keys):
         redis_conn.delete(key)
@@ -146,78 +147,41 @@ def execute_delete(keys='*'):
     delete_durations.append(end - start)
 
 
-def execute_query(key: str = '*', query_filters: dict = None, filter_operator: str = 'OR'):
-    values = []
+def execute_get_by_key(stmt):
+    cols = ''.join(stmt.split()).split(';')
     start = time.time()
-
-    for key in redis_conn.keys(key):
-        values_dict = redis_conn.hgetall(key)
-        if query_filters is not None:
-            if filter_operator == 'OR':
-                if any(values_dict.get(k) == v for k, v in query_filters.items()):
-                    values.append(values_dict)
-            elif filter_operator == 'AND':
-                if all(values_dict.get(k) == v for k, v in query_filters.items()):
-                    values.append(values_dict)
-            else:
-                raise ValueError("Invalid filter_operator. Must be 'OR' or 'AND'.")
-        else:
-            values.append(values_dict)
-    end = time.time()
-    select_durations.append(end - start)
-    return values
-
-
-def execute_get_by_key(key):
-    start = time.time()
-    result = redis_conn.get(key)
+    key = cols[0]
+    if len(cols) == 1:
+        result = redis_conn.hgetall(int(key))
+    else:
+        name = cols[1]
+        result = redis_conn.hget(key, name)
     end = time.time()
     select_durations.append(end - start)
     return result
 
 
-def execute_get_all():
+def execute_insert(data: dict):
+    first_key = next(iter(data))
+    key = data.pop(first_key)
     start = time.time()
-    result = redis_conn.hgetall()
+    redis_conn.hmset(key, data)
     end = time.time()
-    select_durations.append(end - start)
-    return result
+    insert_durations.append(end - start)
 
 
-def execute_update_dict(key, field, value):
+def execute_update(data):
+    first_key = next(iter(data))
+    key = data.pop(first_key)
     start = time.time()
-    redis_conn.hset(key, field, value)
-    end = time.time()
-    update_durations.append(end - start)
-
-
-@DeprecationWarning
-def execute_update_many_dict(key, field_value_dict):
-    start = time.time()
-    redis_conn.hmset(key, field_value_dict)
-    end = time.time()
-    update_durations.append(end - start)
-
-
-@DeprecationWarning
-def execute_update_full_row(key, value):
-    start = time.time()
-    redis_conn.set(key, value)
-    end = time.time()
-    update_durations.append(end - start)
-
-
-@DeprecationWarning
-def execute_update_property(key, property_name, value):
-    start = time.time()
-    redis_conn.set(key, value)
+    redis_conn.hmset(key, data)
     end = time.time()
     update_durations.append(end - start)
 
 
 def execute_count(stmt):
     start = time.time()
-    res = pd.DataFrame(execute_query())
+    res = pd.DataFrame()
     count = len(res.index)
     end = time.time()
     count_durations.append(end - start)
@@ -232,7 +196,7 @@ def execute_count(stmt):
 
 def execute_mean(stmt):
     start = time.time()
-    res = pd.DataFrame(execute_query())
+    res = pd.DataFrame()
     means, median = {}, {}
     for col in res.columns:
         means.update({col: res[col].mean()})
@@ -246,7 +210,7 @@ def execute_mean(stmt):
 def execute_word(stmt):
     stmt, new_values = stmt.split(';', 1)
     start = time.time()
-    res = pd.DataFrame(execute_query())
+    res = pd.DataFrame()
     amount = res[res.columns[0]].str.count(str(new_values)).sum()
     end = time.time()
     word_durations.append(end - start)
