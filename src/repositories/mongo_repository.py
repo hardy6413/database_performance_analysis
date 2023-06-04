@@ -14,6 +14,7 @@ collection = mongo_client[SCHEMA_NAME]
 selectDurations = []
 deleteDurations = []
 updateDurations = []
+insertDurations = []
 countDurations = []
 meanDurations = []
 wordDurations = []
@@ -30,6 +31,15 @@ def delete_all():
 
 def close_connection():
     mongo_client.close()
+
+
+def execute_insert(stmt):
+    if not isinstance(stmt, dict):
+        stmt = ast.literal_eval(stmt)
+    start = time.time()
+    collection.insert_one(dict(stmt))
+    end = time.time()
+    insertDurations.append(end - start)
 
 
 def execute_query(stmt):
@@ -49,7 +59,7 @@ def execute_delete(stmt):
         stmt = ast.literal_eval(stmt)
 
     start = time.time()
-    collection.delete_many(dict(stmt))
+    collection.delete_one(dict(stmt))
     end = time.time()
     deleteDurations.append(end - start)
 
@@ -63,7 +73,7 @@ def execute_update(stmt):
         new_values = ast.literal_eval(new_values)
 
     start = time.time()
-    collection.update_many(dict(stmt), dict(new_values))
+    collection.update_many(dict(stmt),  {"$set": dict(new_values)})
     end = time.time()
     updateDurations.append(end - start)
 

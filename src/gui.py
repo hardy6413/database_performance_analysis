@@ -109,7 +109,14 @@ class DatabaseOperationsApp:
             self.duration_postgres.config(text="czas wykonania: " + str(postgres_repository.insertDurations[-1]))
             print("query w PostgreSQL")
             self.lbl_postgres.insert(tk.END, str(res.head()))
-        pass
+        elif selected_db == MONGODB:
+            inp = self.inputtxt_mongo.get(1.0, "end-1c")
+            res = mongo_repository.execute_insert(inp)
+            self.duration_mongo.config(text="czas wykonania: " + str(mongo_repository.insertDurations[-1]))
+            print("query danych w MongoDB")
+            self.lbl_mongo.insert(tk.END, str(res.head()))
+        elif selected_db == REDIS:
+            print("query danych w Redis")
 
     def get_current_tab_name(self):
         current_tab_index = self.tab_control.select()
