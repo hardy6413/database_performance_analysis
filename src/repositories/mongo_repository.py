@@ -1,4 +1,5 @@
 import ast
+import json
 import os
 
 import pandas as pd
@@ -68,14 +69,10 @@ def execute_delete(stmt):
 
 def execute_update(stmt):
     stmt, new_values = stmt.split(';', 1)
-    if not isinstance(stmt, dict):
-        stmt = ast.literal_eval(stmt)
-
-    if not isinstance(new_values, dict):
-        new_values = ast.literal_eval(new_values)
-
+    stmt = json.loads(stmt)
+    new_values = json.loads(new_values)
     start = time.time()
-    collection.update_many(dict(stmt),  {"$set": dict(new_values)})
+    collection.update_many(stmt,  {"$set": new_values})
     end = time.time()
     update_durations.append(end - start)
 

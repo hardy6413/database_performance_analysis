@@ -22,7 +22,7 @@ word_durations = []
 def initialize_redis(data):
     pipe = redis_conn.pipeline()
     for index, row in data.iterrows():
-        key = str(row['_id'])
+        key = str(row['player_id'])
         record = {
             'player_url': str(row['player_url']),
             'fifa_version': str(row['fifa_version']),
@@ -149,12 +149,18 @@ def execute_delete(keys=""):
     delete_durations.append(end - start)
 
 
-def execute_get_by_key(stmt):
+def execute_query(stmt):
     cols = ''.join(stmt.split()).split(';')
     start = time.time()
     key = cols[0]
-    if len(cols) == 1:
+    if cols[-1] == "":
         result = redis_conn.hgetall(int(key))
+    elif cols[-1] == "*":
+        keys = redis_conn.keys()
+        result = []
+        for key in keys:
+            data = redis_conn.hgetall(key)
+            result.append(data)
     else:
         name = cols[1]
         result = redis_conn.hget(key, name)
@@ -164,7 +170,8 @@ def execute_get_by_key(stmt):
 
 
 def execute_insert(data):
-    first_key = next(iter(json.loads(data)))
+    data = json.loads(data)
+    first_key = next(iter(data))
     key = data.pop(first_key)
     start = time.time()
     redis_conn.hmset(key, data)
@@ -183,7 +190,9 @@ def execute_update(data):
 
 def execute_count(stmt):
     start = time.time()
-    res = pd.DataFrame()
+    key, word = stmt.split(';', 2)
+    x = redis_conn.hgetall(int(key))
+    res = pd.DataFrame(list(x))
     count = len(res.index)
     end = time.time()
     count_durations.append(end - start)
@@ -197,8 +206,12 @@ def execute_count(stmt):
 
 
 def execute_mean(stmt):
+    stmt = "".join(stmt.split())
+    key, word = stmt.split(';', 2)
+    word = "".join(word.split())
     start = time.time()
-    res = pd.DataFrame()
+    x = redis_conn.hgetall(int(key))
+    res = pd.DataFrame(list(x))
     means, median = calculate_mean_and_median(res)
     end = time.time()
     mean_durations.append(end - start)
@@ -206,13 +219,19 @@ def execute_mean(stmt):
 
 
 def execute_word(stmt):
-    stmt, new_values = stmt.split(';', 1)
+    key, word = stmt.split(';', 2)
+    word = "".join(word.split())
     start = time.time()
-    res = pd.DataFrame()
-    amount = res[res.columns[0]].str.count(str(new_values)).sum()
+    x = redis_conn.hgetall(int(key))
+    count = 0
+    if word == '':
+        count = len(x.values())
+    for value in x.values():
+        if value == word:
+            count +=1
     end = time.time()
     word_durations.append(end - start)
-    return amount
+    return count
 
 
 def close_connection():

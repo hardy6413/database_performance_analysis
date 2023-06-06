@@ -7,7 +7,7 @@ from src.repositories.postgres_repository import postgres_conn
 
 
 def initialize_databases():
-    data = pd.read_csv(FILEPATH, low_memory=False)
+    data = pd.read_csv(FILEPATH, low_memory=False, nrows=2000)
     redis_repository.initialize_redis(data)
     mongo_repository.initialize_mongo(data)
     postgres_repository.initialize_postgres(data)
@@ -20,6 +20,8 @@ def clear_databases():
 
 
 if __name__ == '__main__':
+    # clear_databases()
+    # initialize_databases()
     app = DatabaseOperationsApp()
     app.run()
     postgres_conn.close()

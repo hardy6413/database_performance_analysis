@@ -8,7 +8,7 @@ from src.constants import POSTGRESQL, MONGODB, REDIS, \
     EXECUTION_TIME, SELECT, DELETE, MODIFY, INSERT
 from src.repositories import redis_repository, mongo_repository, postgres_repository
 
-pd.set_option('display.max_columns', 5)
+# pd.set_option('display.max_columns', 5)
 
 
 class DatabaseOperationsApp:
@@ -69,7 +69,7 @@ class DatabaseOperationsApp:
             self.duration.config(text="czas wykonania: " + str(mongo_repository.select_durations[-1]))
             self.lbl.insert(tk.END, str(res.head()))
         elif selected_db == REDIS:
-            res = redis_repository.execute_get_by_key(inp)
+            res = redis_repository.execute_query(inp)
             self.duration.config(text="czas wykonania: " + str(redis_repository.select_durations[-1]))
             self.lbl.insert(tk.END, str(res))
 

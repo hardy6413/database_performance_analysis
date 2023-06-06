@@ -26,7 +26,7 @@ def initialize_postgres(data):
 
 
 def execute_query(stmt):
-    query = SELECT_OPERATION + stmt + FROM + TABLE_NAME
+    query = stmt
     start = time.time()
     res = pd.read_sql_query(query, postgres_conn)
     end = time.time()
@@ -108,7 +108,8 @@ def execute_word(stmt):
     stmt, new_values = stmt.split(';', 1)
     start = time.time()
     res = pd.read_sql_query(stmt, postgres_conn)
-    amount = res[res.columns[0]].str.count(str(new_values)).sum()
+    # amount = res[res.columns[0]].str.count(str(new_values)).sum()
+    amount = res.str.count(new_values).sum()
     end = time.time()
     word_durations.append(end - start)
     return amount

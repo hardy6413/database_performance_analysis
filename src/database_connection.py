@@ -12,6 +12,11 @@ def get_postgres_connection():
     return conn
 
 
+def get_alchemy_engine():
+    alchemy_db = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{POSTGRES_PORT}/{DATABASE_NAME}")
+    return alchemy_db.connect()
+
+
 def get_mongo_client():
     mongo_client = pymongo.MongoClient("mongodb://%s:%s@%s:%s/" % (USER, PASSWORD, HOST, MONGO_PORT))
     return mongo_client[DATABASE_NAME]
@@ -22,6 +27,4 @@ def get_redis_connection():
     return redis_connection
 
 
-def get_alchemy_engine():
-    alchemy_db = create_engine(f"postgresql://{USER}:{PASSWORD}@{HOST}:{POSTGRES_PORT}/{DATABASE_NAME}")
-    return alchemy_db.connect()
+
